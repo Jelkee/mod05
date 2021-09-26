@@ -1,70 +1,32 @@
-																		**Module 5- Computer Systems (2021-22)**        
-
-​																									**Project**                                       
-
-​																				<img src="C:\Users\SarmahDK\AppData\Roaming\Typora\typora-user-images\image-20210603140931451.png" alt="image-20210603140931451" style="zoom:80%;" />                                          
-
-   
-
-#### 																Security by Design Checklist 
-
-#### 															(Requirement Analysis Phase 1)
-
-| Team ID:          | Team Members:  |
+﻿
+| Team ID: 31         | Team Members:  |
 | ----------------- | -------------- |
 | **Project Name:** | **Mentor(s):** |
 
-**Steps to be performed:**
+|**Security Policy**|**Confidentiality, Integrity, and Availability**|
+|**security Requirements**|**Security mechanisms (List down for your application)**|**Remarks on why you considered these requirements? (in a brief)**|<p>**Supplement requirements for your application**</p><p>**(user story/Abuse case)**</p>|**Risk identification/Threat Assessment (at least one risk identification/abuse case)**|**appropriate Security Controls**|**Tick** ✔**if you have applied the given security controls as suggested in the left column**|
+|Authentication|Registered phone number|For granting only the users in this house can access the smart home, we need to register the accounts with their phone number|<p>*Goal*: The system ensures that the phone numbers exist.</p><p>*Requirement*:To register the application, the users should use their phone numbers. *User story*: “As a user, I can enter my phone number to register.</p><p>*Abuse case*: “As an attacker, I can enter a virtual phone number to register.”</p>|<p>1. You enter a wrong phone number more than 3 times.</p><p>2. You enter the correct phone number but fail to enter the right passcode.</p><p>3. The user enters a phone number which is not  the specified format.</p>
+||Password checking|For users to use the app and access their profiles, they need to authenticate with a pin code / password to prevent unauthorized people from accessing the app through the phone of one of the household members|<p>*Goal*: The system verifies that there are no default passwords used by the application or any of its components.</p><p>*Requirement*: To access the application, one should require authentication.</p>|<p>1. You enter a wrong password more than 3 times.</p><p>2. You enter a default password.</p><p>3. The length of the password is less than 8 digits.</p>
 
-- You should select a minimum of one security mechanism from each  of the security requirements from authentication and authorization ( auditing  is not included here).
 
-- The auditing requirements should be considered as suggested  in the table according to your application. Other than the normal check on  protecting log files, backup files, etc, you should also think about the GDPR obligations, software licensing, etc.  in line with your application.
+||||*User story*: “As a user, I can sign in the application by using my username/phone number and password” *Abuse case*: As an attacker, I can enter the default passwords to access the application.
+| :- | :- | :- | :- | :- | :- | :- |
+||Token system|When users want to register an account or forget the password, we need to use the token to authenticate.|<p>*Goal*: The system ensures that the SMS code is not simple.</p><p>*Requirement*: The system sends an SMS code to the user that they can use to sign in</p><p>*User story*: “As a user, I can enter my phone number and then enter the code sent to me by the application through SMS to access it. *Abuse case*: “As an attacker, I can enter the simple and stupid SMS code to register an account.</p>|<p>1. The token is too simple, such as 0000,1234 etc.</p><p>2. You enter a wrong SMS token more than three times.</p>
+||Biometric authentication (fingerprint or face recognition)|For some advanced authentication features (Optional; could be used for e.g. adding new users or accessing certain sensitive settings)|<p>*Goal*: The system verifies that the fingerprints and facial data entered are not blurred.</p><p>*Requirement*: To access the application without password, the user should use his/her face to authenticate.</p><p>*User story*: As a user, I want to access the application by fingerprint or face recognition.</p><p>*Abuse story*: As an attacker,</p>|<p>1. You enter wrong biometric data more than 3 times.</p><p>2. The biometric data are blurred.</p>
 
-- The given security mechanisms are for your inspiration. You  can select other mechanisms also according to the requirement of your  application. For example: If you select "authentication" as one  of the security requirements, the mechanism can be logging/password  checking, biometric, OAuth, etc. The same is applicable for authorization and  auditing.
 
-- Justify the reason to select a particular mechanism for the requirements in  the given column ‘C’.
+||||I can enter the application by using the photo or model.
+| :- | :- | :- | :- | :- | :- | :- |
+|Authorization|Role-based authorization|The admin can register new members and change the settings, others can only control the different smart home components.|*Goal*: The system requires biometric data before the admin can change settings *Requirement*: Regular users can only access the components of the smart system whereas admins can access all settings as well *User story*: “As an admin, I can change all settings of the smart home system”. *Abuse story*: “As an attacker, I get access to all settings if I manage to get into the admin account”|1. You try to perform an operation to which you’re not authorized twice in a row.
+|Audit|Protection of log files|To prevent unauthorized users from getting access to personal information through the log files|<p>*Goal*: The system ensures that the password used for accessing the log files is not the same as the password the admin uses for their account in the app *Requirement*: The admin can access the protected log files with a password</p><p>*User story*: “As an admin, I can enter a password to get access to the log files” *Abuse story*: “As an attacker, I can access to all log files if I get hold of the admin password”</p>|1. You try to open a log file without the proper permissions
+||Encoding of sensitive data (personal identifiable|To prevent people from getting access to this|*Goal*: The system uses hashing to make it harder for|1. You request sensitive data from the server to
 
-- Write supplement requirement(s) in the form of a user story or  Abuse case for the application (refer to the example given on the table, column ‘D’).  (The supplement requirements should be according to the goals and  non-functional requirement (s) identified for your application.)
 
-- Write the possible risks involved for the supplement requirements (refer to  the example given in the table, column ‘E’).
+||information, passwords, phone numbers, etc)|sensitive data in case of a data breach|<p>attackers to decipher the encoded data by brute force *Requirement*: The system encodes sensitive user data to protect it in case of an attack</p><p>*User story*: “As a user, I can safely enter my data in the app because I know it will be encoded”</p><p>*Abuse story*: “As an attacker, I can use brute force to decipher the encrypted data”</p>|which you do not have access
+|
 
-- Write the resources/mechanisms/tools to avoid/mitigate those risks for  security controls (refer to the example of the column heading "Appropriate  Security Control" (column ‘F’))
 
-- This document must be reviewed with the team members and approved by your  mentor(s)/TAs.
-
-- Put  checkmark in the last column for all verified items.
-
-- This  document should be appended to the Software Requirement Specification (SRS)  document.
-
-  **Follow  these 5 points for each of the Security Mechanisms and write them under  Appropriate Security Controls**:
-
-  (i) Supplement security requirements to avoid risk. 
-  
-  (ii) Write the requirement of the resources to mitigate such risks. For example:  The type of Authentication software, security tokens, password management  software, etc.
-  
-  (iii) Devise a plan/method (tentative) to work on the identified risks.
-  
-  (iv)  Review the documentation within your team.
-  
-  (v)  Approve the document by your mentor.
-
-  
-  
-  
-  
-  | Security  Policy                                           | Confidentiality, Integrity, and Availability                 |                                                              |                                                              |                                                              |                                                              |                                                              |
-  | ---------------------------------------------------------- | ------------------------------------------------------------ | :----------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-  | **<span style="color:blue">Security  Requirements</span>** | **<span style="color:blue">Security  mechanisms (List down for your application)</span>** | **<span style="color:blue">Remarks  on why you considered these requirements? (in a brief)</span>** | **<span style="color:blue">Supplement  requirements for your application       (user story/Abuse case)</span>** | **<span style="color:blue">Risk  identification/Threat Assessment (at least one risk identification/abuse case)</span>** | **<span style="color:blue">Appropriate  Security Controls</span>** | **<span style="color:blue">Tick ✔if  you have applied the given security controls as suggested in the left  column </span>** |
-  | **1.** **Authentication**                                  | ***For example:*** Checking password                         |                                                              | ***Example:***                                               | ***Consider  the same Example:***                            | Follow  the 5 points mentioned above.                        |                                                              |
-  |                                                            | ***Examples:** [Biometric](https://www.youtube.com/watch?v=MBtzOzPakt8), Account security via [Two factor authentication](https://www.youtube.com/watch?v=0mvCeNsTa1g)/[Multi  Factor Authentication](https://www.youtube.com/watch?v=6kJgM4jiuUA), Smartphone communication (registered phone number),  [OAuth](https://www.youtube.com/watch?v=CPbvxxslDTU), [Proof of User's physical presence for authentication](https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/windows-hello-face-authentication) ,  [Proximity based authentication](https://www.youtube.com/watch?v=TglHPqP9iSE), etc.* |                                                              | **Goal:** The system verifies  that there are no default passwords used by the application or any of its  components. **Requirement:** To  access the application, one should require authentication. **User story:** “As a user, I can enter  my user name and passwords to access the application.” **Abuse Case:** As an attacker, I can  enter the default passwords to access the application. | **Risk identication:** i) The  length of the passwords is less than 1023 characters., ii) The password is  not very strong., iii) You enter a wrong password more than 3 times, etc. | Follow  the 5 points mentioned above.                        |                                                              |
-  | **2. Authorization**                                       | Access  control policies-User based, role-based, etc.        |                                                              |                                                              |                                                              | Follow  the 5 points mentioned above.                        |                                                              |
-  | **3. Audit**                                               | Protection  of Log files,                                    |                                                              |                                                              |                                                              | Follow  the 5 points mentioned above.                        |                                                              |
-  |                                                            | Backup  files,                                               |                                                              |                                                              |                                                              | Follow  the 5 points mentioned above.                        |                                                              |
-  |                                                            | Temporary  files, software and database licenses (Legal aspect), processing of personal  identifiable information on the devices (Legal aspect/GDPR policies), etc. |                                                              |                                                              |                                                              | Follow  the 5 points mentioned above.                        |                                                              |
-  
-  
-
-| Team members’ reviewed             | <span style="color:blue">(Member 1, yes), (Member 2, Yes),…</span> |
-| ---------------------------------- | ------------------------------------------------------------ |
-| **Mentors’ reviewed and verified** | <span style="color:blue">**(Mentor 1, yes), (Mentor 2, Yes)**</span> |
+| Team  members' reviewed:              | (Member  1, Yes), (Member 2, Yes),…      |
+| ------------------------------------- | ---------------------------------------- |
+| **Mentor(s)  reviewed and verified:** | **(Mentor  1, Yes), (Mentor 2, Yes), …** |
 
