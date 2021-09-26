@@ -1,118 +1,155 @@
-#### **Module 5- Computer Systems (2020-21)**  <img src="C:\Users\SarmahDK\AppData\Roaming\Typora\typora-user-images\image-20210602172621460.png" alt="image-20210602172621460" style="zoom:80%;" />
+﻿**Module 5‐ Computer Systems (2020‐21)** 
 
-#### **Project**
+**Project** 
+**
 
-##### **TEAM CONTRACT**
-
-| Team ID: | Project Title: | Mentor(s): |
-| -------- | -------------- | ---------- |
-
-**					**
-
-1. **Team information and their roles (What are the convenient Belbin roles for you? Mention at least 2 roles)**
-
-   The Belbin roles are Resource Investigator, Team-worker and Coordinator (the Social roles); Plant, Monitor Evaluator and Specialist (the Thinking roles), and Shaper, Implementer and Completer Finisher (the Action or Task roles) (refer to the link for a better understanding: <https://www.belbin.com/about/belbin-team-roles> ) 
+**
 
 
-|**Name of the Team member**|**Preferred roles (Belbin)**|**Reason to select your preference (Any special expertise on your preference?)**|**Grade expectations** |**Preferable day, time, and place to have extra meetings**|**Scrum Master (Week number)**|**Preferred method of communication           for project discussion/informing any relevant updates to your team.**|
-| - | - | - | - | - | - | :- |
-||||**Minimum grade**|**Expected grade**|||
-|<***Example***<*1.Dipti Sarmah*<|*Specialist*|*Experience in Front-end* |*5.5*|*7.5*|*Any time on weekends*|*3-4*|
-||*Team Worker and Coordinator*||||||
-||*Shaper*||||||
-|*2…*|||||||
-|*3…*|||||||
-|*4…*|||||||
-|*5…*|||||||
-|*6…*|||||||
+![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.001.png)
 
-2. **Project Goals (Mention at least 5)**
+**TEAM CONTRACT** 
 
-   What are your team goals for the project? What do you want to achieve? What skills do you want to improve or work?
+**Team ID: 31    Project Title: Raspberry home      Mentor(s):   Filip Ivanov, Ricco Pratama Halim**
 
-**Example:**
+**1. Team information and their roles (What are the convenient Belbin roles for you? Mention at least 2 roles)** 
 
-- <span style='color:blue'>BLUE*To gain knowledge in Python programming and Raspberry Pi.*</span>
-- <span style='color:blue'>*To develop a product that meets all the requirements.*</span>
+The Belbin roles are Resource Investigator, Team‐worker and Co‐ordinator (the Social roles); Plant, Monitor Evaluator and Specialist (the Thinking roles), and Shaper, Implementer and Completer Finisher (the Action or Task roles) (refer to the link for a better understanding: https://www.belbin.com/about/belbin‐team‐roles )   
 
-
-
-3. **Team Expectations (Mention at least 3 for each of the criteria)**
-
-   What do you expect from the team members for the a) Participation, b) Meetings, c) Communication, d) Conduct, and e) Conflict
+|**Name of the Team member**|<p>**Preferred** </p><p>**roles** </p><p>**(Belbin)**</p>|<p>**Reason to select your preference** </p><p>**(Any special expertise on your** </p><p>**preference?)**</p>|**Grade expectations**   |<p>**Preferable day, time, and place to have extra** </p><p>**meetings**</p>|<p>**Scrum** </p><p>**Master** </p><p>**(Week** </p><p>**number)**</p>|<p>**Preferred method of communication for project** </p><p>**discussion/informing any relevant updates to your team.**</p>|
+| - | :-: | - | :- | - | :- | - |
+||||**Minimum grade**|**Expected grade**||||
+|<p>*1. Jelke Schröder* </p><p></p>|*Team-worker*|<p>*Experience* </p><p>*in Front‐ end and back-end*</p><p>*Good in creative implementation*</p>|*5.5* |*7.5* |<p>*Any time on* </p><p>*weekends*</p>|*3*||
+||*Co‐ ordinator*||||||*Discord, whatsapp*|
+||*Specialist*|||||||
+|*2. Damon Kaewborisut*|<p>*Complete finisher*</p><p>*Resource   Investigat-or*</p><p>*Shaper*</p>|*Spend a lot of time on planning.*|*5.5*|*7*|*Weekends after diner*|*4*|*Discord, zulip or whatsapp*|
+|*3. Yifan Sun*|<p>*Team worker*</p><p>*Completer*</p><p>*Finisher*</p><p>*Implement-er*</p><p></p>|*Tend to work hard on Implementi-ng*|*5.5*|*7*|*weekends , after dinner*|*5*|*Discord, whatsapp*|
+|*4. Shuhang Tian*|<p>*Plant*</p><p>*Resource Investigator*</p>|*Imaginative*|*5.5*|*7*|*morning*|*6*|*Discord, Whatsapp, Canvas or Zulip*|
+|*5. Niek Zieverink*|<p>*- Plant*</p><p>*- Monitor evaluator*</p><p>*- Specialist*</p>|*Coming up with ideas comes easier than implementing them*|*5.5*|*7*|*Early afternoon*|*7*|*Whatsapp, Discord*|
+|*6. Masis Zovikoglu* |<p>*.Monitor Evaluator*</p><p>*.Plant*</p>|*Observant and likes to analyse* |*5.5*|*7*|<p>*Weekdays* </p><p>*Afternoom or evening*</p>|*8*|*Whatsapp, Discord, Telegram*|
 
 
-| a) **Participation (What is your group planning for team participation?):** |
-| ------------------------------------------------------------ |
-| ***Example***: <span style='color:blue'>*As a project team:*</span> |
-| <span style='color:blue'>-*We agree not to miss any meeting unless something is very important.*</span> |
-| <span style='color:blue'>*-We agree to pay attention to each other and give a chance to all the members to speak and share their views.*</span> |
-| <span style='color:blue'>-*We agree to…*</span>              |
-| <span style='color:blue'>*-We agree to…*</span>              |
-| <span style='color:blue'>*-We agree to…*</span>              |
+**2. Project Goals (Mention at least 5)**
+
+1    Prepared by: Dipti K. Sarmah 
+
+**Module 5‐ Computer Systems (2020‐21)** 
+
+**Project** 
+**
+
+**
 
 
-| b) **Meetings (What is your expectation from the team for the team meetings?):** |
-| ------------------------------------------------------------ |
-| ***Example***: <span style='color:blue'>*As a project team:*</span> |
-| <span style='color:blue'>- *We agree to come to the meetings 5 minutes before the allocated time*</span> |
-| <span style='color:blue'>*- We agree to prepare ourselves with the ideas, and the tasks to be done before the meeting.*</span> |
-| <span style='color:blue'>*-We agree to…*</span>              |
-| <span style='color:blue'>*-We agree to…*</span>              |
-|                                                              |
+![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.001.png)
 
+What are your team goals for the project? What do you want to achieve? What skills do you want to improve or work? 
 
-| c) **Communication (How do you communicate with each other? Any rules for communication?):** |
-| ------------------------------------------------------------ |
-| ***Example*** <span style='color:blue'>*As a project team:*</span> |
-| <span style='color:blue'>*-We agree to follow one/two online tools for communication. (List the name of those tools)*</span> |
-| <span style='color:blue'>*-We agree to decide a venue and time for the physical meetings.*</span> |
-| <span style='color:blue'>*-We agree to …*</span>             |
-| <span style='color:blue'>*-We agree to …*</span>             |
-|                                                              |
+**Example:** 
 
+‐ *To gain knowledge in Python programming and Raspberry Pi.* 
 
-| d) **Individual Accountability (What is your expectation level for each individual in your team for fulfilling team assignments, tasks, and accomplishing deadlines?):** |
-| ------------------------------------------------------------ |
-| ***Example*** <span style='color:blue'>*As a project team:*</span> |
-| <span style='color:blue'>*We agree that if a team member does not complete the assigned task in time without intimating us, this is their responsibility.* </span> |
-| <span style='color:blue'>*-We agree to communicate our to-do tasks within the team, and if possible we send reminders to each other to have a submission on time.*</span> |
-| <span style='color:blue'>-We agree to …</span>               |
-| <span style='color:blue'>-We agree to …</span>               |
+‐ *To develop a product that meets all the requirements.* 
 
+‐ To gain a better understanding of the concepts taught in this course by applying them to the project
 
-| e) **Conduct (How do you follow the degree of professionalism within the team and how do you manage if any of the team members doesn’t follow the conduct or fails to fulfill expectations?):** |
-| ------------------------------------------------------------ |
-| **Example** <span style='color:blue'>*As a project team :*</span> |
-| <span style='color:blue'>**-We will not tolerate rudeness in meetings as it affects the quality of the project.*</span> |
-| <span style='color:blue'>**-We will be disciplined and honest throughout the project.*</span> |
-| <span style='color:blue'>**- We agree to follow the orange card procedure for a warning to the team member(s).*</span> |
-| <span style='color:blue'>**-We agree to …*</span>            |
-|                                                              |
+‐ To improve our teamwork, communication and project management skills.
 
-| f) **Conflict (How do you handle or how will you react to team conflicts?):** |
-| ------------------------------------------------------------ |
-| ***Example*** <span style='color:blue'>*As a project team:* </span> |
-| <span style='color:blue'>*- We agree to discuss the entire team the problem and mutually find a solution.*</span> |
-| <span style='color:blue'>*- We agree to discuss the problem with our mentor(s) and project coordinator if we couldn't identify the solution.*</span> |
-| <span style='color:blue'>*- We agree to…*</span>             |
-| <span style='color:blue'>*- We agree to…*</span>             |
+\- To improve our agile development skills with Flexibele Scrum, because it is relevant for projects to have efficient meetings and implementing features.
 
-4. **Team Agreements (These are the final 10 commitments/rules for your team that you agreed on together and promise to follow these rules during the project, Course: Computer Systems, Module 5 (2021-22).** 
+**3. Team Expectations (Mention at least 3 for each of the criteria)** 
 
-   I undersigned, hereby declare that I have read, agreed, and accepted all the rules and commitments mentioned in this document and will try my best to follow these rules during the project, Course: Computer Systems, Module 5 (2021-22). If the rules are not being followed by us, we will bear the consequences as mentioned.
+What do you expect from the team members for the a) Participation, b) Meetings, c) Communication, d) Conduct, and e) Conflict
 
-|**Commitments (C)**|**A signal on your commitments (Yes/No)**|**Team Member’s Signature (Image)**|
-| :- | :-: | :- |
-||Member 1, Member 2, Member 3, Member 4, Member 5, Member 6||
-|**Example**  <span style='color:blue'>*i). As a team member I’ll always be on time in all the meetings with the preparation and agenda in my mind.* </span>|Yes||
-|<span style='color:blue'>*ii). As a team member I’ll always give importance to ideas and show respect to all the members.*</span>|||
-|<span style='color:blue'>*iii) c. As a team member I’ll always be transparent with my team.*</span>|||
-|…|||
+|**a) Participation (What is your group planning for team participation?):**|
+| :- |
+|<p>***Example*** </p><p>*As a project team:* </p><p>*‐We agree not to miss any meeting unless something is very important.*</p>|
+|*‐We agree to pay attention to each other and give a chance to all the members to speak and share their views.*|
+|*‐We agree that everyone will make sufficient effort into the project.*|
+|*‐We agree to never miss deadlines, unless the task is impossible within the time limit.*|
+|*‐We agree to make plans when everyone is present or will be notified what the planning is.*|
 
 
 
+|**b) Meetings (What is your expectation from the team for the team meetings?):**|
+| :-: |
+|<p>***Example*** </p><p>*As a project team:* </p><p>*‐ We agree to come to the meetings 5 minutes before the allocated time.*</p>|
+|`  `*‐ We agree to prepare ourselves with the ideas, and the tasks to be done before the meeting.*|
+|` `*‐We agree to have at least one meeting per week.*|
+|*‐We agree to make sure that everyone knows what to do before the next meeting*|
+|*‐We agree to keep the meetings organized so people won’t talk at cross purposes*|
 
 
-​																																										Prepared by: Dipti K. Sarmah
+
+|**c) Communication (How do you communicate with each other? Any rules for communication?):**|
+| :- |
+
+
+|<p>***Example***   </p><p>*As a project team:* </p><p>*‐We agree to follow one/two online tools for communication. (Discord,whatsapp)*</p>|
+| :- |
+|*‐We agree to decide a venue and time for the physical meetings.*|
+|‐We agree to check on all online communications(email, discord and canvas) at least in the morning./ 3 times a day.|
+|‐We agree to be polite with each other while chatting in discord, or speaking in physical meetings.|
+|‐We agree that we all speak the same language for communicating.|
+
+
+
+|**d) Individual Accountability (What is your expectation level for each individual in your team for fulfilling team assignments, tasks, and accomplishing deadlines?):**|
+| :- |
+|<p>***Example***   </p><p>*As a project team:* </p><p>*‐We agree that if a team member does not complete the assigned task in time without intimating us, this is their responsibility.*</p>|
+|*‐We agree to communicate our to‐do tasks within the team, and if possible we send reminders to each other to have a submission on time.*|
+|*‐We agree that one should  inform other members the progress in tasks everyday.*|
+|‐We agree to let the others know when we encounter difficulties with our tasks so they can help out if possible|
+|‐We agree to finish our tasks well before the deadline so we won’t run into problems with missed deadlines or last-minute submissions|
+
+
+
+|**e) Conduct (How do you follow the degree of professionalism within the team and how do you manage if any of the team members doesn’t follow the conduct or fails to fulfill expectations?):**|
+| - |
+|<p>***Example*** </p><p>*As a project team :* </p><p>*‐We will not tolerate rudeness in meetings as it affects the quality of the project.*</p>|
+|*‐We will be disciplined and honest throughout the project.*|
+|*‐ We agree to follow the orange card procedure for a warning to the team member(s).*|
+|‐We agree to not interrupt each other when they are speaking|
+|‐We agree to not get angry at each other during the meetings. If someone hasn’t done their responsibility we will use the card system instead of getting mad.|
+
+
+3    Prepared by: Dipti K. Sarmah
+
+**Module 5‐ Computer Systems (2020‐21)** 
+
+**Project** 
+**
+
+**
+
+
+![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.001.png)
+
+||
+| :- |
+
+
+
+|**f) Conflict (How do you handle or how will you react to team conflicts?):**|
+| :- |
+|<p>***Example*** </p><p>*As a project team:* </p><p>*‐ We agree to discuss the entire team the problem and mutually find a solution.*</p>|
+|*‐ We agree to discuss the problem with our mentor(s) and project coordinator if we couldn't identify the solution.*|
+|*‐ We agree to* use the card system when the conflict was caused by one of the group members not living up to their responsibility|
+|‐ *We agree to let the team members that started the conflict, figure it out with each other how to solve the problem before the team will intervene,*|
+|‐ *We agree to* deal with any minor conflicts as soon as they arise to prevent them from growing bigger over time|
+
+
+**4. Team Agreements (These are the final 10 commitments/rules for your team that you agreed on together and promise to follow these rules during the project, Course: Computer Systems, Module 5 (2021‐22).**   
+
+I undersigned, hereby declare that I have read, agreed, and accepted all the rules and commitments mentioned in this document and will try my best to follow these rules during the project, Course: Computer Systems, Module 5 (2021‐22). If the rules are not being followed by us, we will bear the consequences as mentioned.
+
+|<p>**Commitments** </p><p>**(C)**</p>|**A signal on your commitments (Yes/No)** ||<p>**Team** </p><p>**Member’s** </p><p>**Signature** </p><p>**(Image)**</p>|
+| :- | :-: | :- | :- |
+||Damon |Niek |Yifan |Shuhang |Jelke |Masis||
+|<p>***Example:***   </p><p>*‐As a team* </p><p>*member I’ll* </p><p>*always be on* </p><p>*time in all the* </p><p>*meetings with* </p><p>*the preparation and agenda in* </p><p>*my mind.* </p><p>*‐ As a team* </p><p>*member I’ll* </p><p>*always give* </p><p>*importance to ideas and show respect to all the members.* </p><p>*‐ As a team* </p><p>*member I’ll* </p><p>*always be* </p><p>*transparent with my team.*</p>|Yes |Yes |Yes |Yes |Yes |Yes|<p>`  `*Niek:*</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.002.jpeg)</p><p></p><p>Damon:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.003.png)</p><p></p><p>Yifan:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.004.jpeg)</p><p></p><p>Shuhang:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.005.jpeg)</p><p>Masis:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.006.jpeg)</p><p></p><p>Jelke:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.007.jpeg)</p>|
+|<p>- As a team member I’ll always make sure to communicate my progress to the others</p><p></p><p>- As a team member I’ll always behave in a professional and respectful manner during the meetings</p><p></p><p>- As a team member I’ll always let others know in advance when I won’t be able to attend a meeting</p><p></p><p>- As a team member, I will try to follow the planning, such that we meet the  deadlines.</p><p></p><p>- As a team member I’ll always make sure my work meets the standards of the group in terms of quality</p><p></p><p>- As a team member I’ll always help the other group members when they run into a problem that I’m able to solve</p><p></p><p>- As a team member, I’ll always put 100% dedication into the project.</p><p></p><p>- As a team member I’ll always be on time for the meetings if I don’t have a reason not to be</p><p></p><p>- As a team member I’ll always encourage the other group members to deliver their work in time and will remind them if necessary</p><p></p><p>- As a team member, I’ll take my responsibility as a Scrum Master to communicate with the team member about the progress and keep the team and schedule together.</p>|Yes|Yes|Yes|Yes|Yes|Yes|<p>*Niek:*</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.002.jpeg)</p><p></p><p>Damon:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.003.png)</p><p></p><p>Yifan:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.004.jpeg)</p><p></p><p>Shuhang:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.005.jpeg)</p><p>Masis:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.008.jpeg)</p><p><br>Jelke:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.007.jpeg)</p>|
+**  
+**
+
+
 
