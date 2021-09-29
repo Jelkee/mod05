@@ -1,155 +1,459 @@
-﻿**Module 5‐ Computer Systems (2020‐21)** 
+Module 5- Computer Systems (2020-21)
+Project
+TEAM CONTRACT
+Team ID: 31 Pr oject Title: Raspberry home Mentor(s): Filip Ivanov, Ricco Pratama Halim
 
-**Project** 
-**
+1. Team information and their roles (What are the convenient Belbin roles for you? Mention at
+least 2 roles)
+TheBelbinrolesareResourceInvestigator,Team-workerandCo-ordinator(theSocialroles);
+Plant,MonitorEvaluatorandSpecialist(theThinkingroles),andShaper,Implementerand
+CompleterFinisher(theActionorTaskroles)(refertothelinkforabetterunderstanding:
+https://www.belbin.com/about/belbin-team-roles)
 
-**
+Nameofthe
+Team
+member
 
+Preferred
+roles
+(Belbin)
 
-![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.001.png)
+Reason to
+selectyour
+preference
+(Any
+special
+expertise
+on your
+preference?)
 
-**TEAM CONTRACT** 
+Grade expectations Preferab
+le day,
+time,
+and
+placeto
+have
+extra
+meetings
 
-**Team ID: 31    Project Title: Raspberry home      Mentor(s):   Filip Ivanov, Ricco Pratama Halim**
+Scrum
+Master
+(Week
+number)
 
-**1. Team information and their roles (What are the convenient Belbin roles for you? Mention at least 2 roles)** 
+Preferred method of
+communication for
+project
+discussion/informing
+anyrelevantupdatesto
+your team.
 
-The Belbin roles are Resource Investigator, Team‐worker and Co‐ordinator (the Social roles); Plant, Monitor Evaluator and Specialist (the Thinking roles), and Shaper, Implementer and Completer Finisher (the Action or Task roles) (refer to the link for a better understanding: https://www.belbin.com/about/belbin‐team‐roles )   
+Mini
+mum
+grade
 
-|**Name of the Team member**|<p>**Preferred** </p><p>**roles** </p><p>**(Belbin)**</p>|<p>**Reason to select your preference** </p><p>**(Any special expertise on your** </p><p>**preference?)**</p>|**Grade expectations**   |<p>**Preferable day, time, and place to have extra** </p><p>**meetings**</p>|<p>**Scrum** </p><p>**Master** </p><p>**(Week** </p><p>**number)**</p>|<p>**Preferred method of communication for project** </p><p>**discussion/informing any relevant updates to your team.**</p>|
-| - | :-: | - | :- | - | :- | - |
-||||**Minimum grade**|**Expected grade**||||
-|<p>*1. Jelke Schröder* </p><p></p>|*Team-worker*|<p>*Experience* </p><p>*in Front‐ end and back-end*</p><p>*Good in creative implementation*</p>|*5.5* |*7.5* |<p>*Any time on* </p><p>*weekends*</p>|*3*||
-||*Co‐ ordinator*||||||*Discord, whatsapp*|
-||*Specialist*|||||||
-|*2. Damon Kaewborisut*|<p>*Complete finisher*</p><p>*Resource   Investigat-or*</p><p>*Shaper*</p>|*Spend a lot of time on planning.*|*5.5*|*7*|*Weekends after diner*|*4*|*Discord, zulip or whatsapp*|
-|*3. Yifan Sun*|<p>*Team worker*</p><p>*Completer*</p><p>*Finisher*</p><p>*Implement-er*</p><p></p>|*Tend to work hard on Implementi-ng*|*5.5*|*7*|*weekends , after dinner*|*5*|*Discord, whatsapp*|
-|*4. Shuhang Tian*|<p>*Plant*</p><p>*Resource Investigator*</p>|*Imaginative*|*5.5*|*7*|*morning*|*6*|*Discord, Whatsapp, Canvas or Zulip*|
-|*5. Niek Zieverink*|<p>*- Plant*</p><p>*- Monitor evaluator*</p><p>*- Specialist*</p>|*Coming up with ideas comes easier than implementing them*|*5.5*|*7*|*Early afternoon*|*7*|*Whatsapp, Discord*|
-|*6. Masis Zovikoglu* |<p>*.Monitor Evaluator*</p><p>*.Plant*</p>|*Observant and likes to analyse* |*5.5*|*7*|<p>*Weekdays* </p><p>*Afternoom or evening*</p>|*8*|*Whatsapp, Discord, Telegram*|
+Expec
+ted
+grade
 
+1. Jelke
+Schröder
 
-**2. Project Goals (Mention at least 5)**
+Team-worke
+r
 
-1    Prepared by: Dipti K. Sarmah 
+Experience
+in Front-
+end and
+back-end
+Good in
+creative
+implemen
+tation
 
-**Module 5‐ Computer Systems (2020‐21)** 
+5.5 7.5 Any
+time on
+weekends
 
-**Project** 
-**
+3
 
-**
+Co-
+ordinator
 
+Discord, whatsapp
 
-![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.001.png)
+Specialist
 
-What are your team goals for the project? What do you want to achieve? What skills do you want to improve or work? 
+2. Damon
+Kaewborisut
 
-**Example:** 
+Complete
+finisher
+Resource
+Investigat-
+or
+Shaper
 
-‐ *To gain knowledge in Python programming and Raspberry Pi.* 
+Spend a lot
+of time on
+planning.
 
-‐ *To develop a product that meets all the requirements.* 
+5.5 7 Weekend
+s after
+diner
 
-‐ To gain a better understanding of the concepts taught in this course by applying them to the project
+4 Discord, zulip or
+whatsapp
 
-‐ To improve our teamwork, communication and project management skills.
+3. Yifan Sun Team
+worker
+Completer
+Finisher
+Implement-
+er
 
-\- To improve our agile development skills with Flexibele Scrum, because it is relevant for projects to have efficient meetings and implementing features.
+Tend to
+work hard
+on
+Implementi-
+ng
 
-**3. Team Expectations (Mention at least 3 for each of the criteria)** 
+5.5 7 weekends
+, after
+dinner
 
-What do you expect from the team members for the a) Participation, b) Meetings, c) Communication, d) Conduct, and e) Conflict
+5 Discord, whatsapp
 
-|**a) Participation (What is your group planning for team participation?):**|
-| :- |
-|<p>***Example*** </p><p>*As a project team:* </p><p>*‐We agree not to miss any meeting unless something is very important.*</p>|
-|*‐We agree to pay attention to each other and give a chance to all the members to speak and share their views.*|
-|*‐We agree that everyone will make sufficient effort into the project.*|
-|*‐We agree to never miss deadlines, unless the task is impossible within the time limit.*|
-|*‐We agree to make plans when everyone is present or will be notified what the planning is.*|
+4. Shuhang
+Tian
 
+Plant
+Resource
+Investigator
 
+Imaginative 5.5 7 morning 6 Discord, Whatsapp,
+Canvas or Zulip
 
-|**b) Meetings (What is your expectation from the team for the team meetings?):**|
-| :-: |
-|<p>***Example*** </p><p>*As a project team:* </p><p>*‐ We agree to come to the meetings 5 minutes before the allocated time.*</p>|
-|`  `*‐ We agree to prepare ourselves with the ideas, and the tasks to be done before the meeting.*|
-|` `*‐We agree to have at least one meeting per week.*|
-|*‐We agree to make sure that everyone knows what to do before the next meeting*|
-|*‐We agree to keep the meetings organized so people won’t talk at cross purposes*|
+5. Niek
+Zieverink
+- Plant
+- Monitor
+evaluator
+- Specialist
 
+Coming up
+with ideas
+comes
+easier than
+implementin
+g them
 
+5.5 7 Early
+afternoon
 
-|**c) Communication (How do you communicate with each other? Any rules for communication?):**|
-| :- |
+7 Whatsapp, Discord
 
+6. Masis
+Zovikoglu
 
-|<p>***Example***   </p><p>*As a project team:* </p><p>*‐We agree to follow one/two online tools for communication. (Discord,whatsapp)*</p>|
-| :- |
-|*‐We agree to decide a venue and time for the physical meetings.*|
-|‐We agree to check on all online communications(email, discord and canvas) at least in the morning./ 3 times a day.|
-|‐We agree to be polite with each other while chatting in discord, or speaking in physical meetings.|
-|‐We agree that we all speak the same language for communicating.|
+.Monitor
+Evaluator
+.Plant
 
+Observant
+and likes to
+analyse
 
+5.5 7 Weekdays
+Afternoo
+m or
+evening
 
-|**d) Individual Accountability (What is your expectation level for each individual in your team for fulfilling team assignments, tasks, and accomplishing deadlines?):**|
-| :- |
-|<p>***Example***   </p><p>*As a project team:* </p><p>*‐We agree that if a team member does not complete the assigned task in time without intimating us, this is their responsibility.*</p>|
-|*‐We agree to communicate our to‐do tasks within the team, and if possible we send reminders to each other to have a submission on time.*|
-|*‐We agree that one should  inform other members the progress in tasks everyday.*|
-|‐We agree to let the others know when we encounter difficulties with our tasks so they can help out if possible|
-|‐We agree to finish our tasks well before the deadline so we won’t run into problems with missed deadlines or last-minute submissions|
+8 Whatsapp, Discord,
+Telegram
 
+2. Project Goals (Mention at least 5)
 
+1 Prepared by: Dipti K. Sarmah
 
-|**e) Conduct (How do you follow the degree of professionalism within the team and how do you manage if any of the team members doesn’t follow the conduct or fails to fulfill expectations?):**|
-| - |
-|<p>***Example*** </p><p>*As a project team :* </p><p>*‐We will not tolerate rudeness in meetings as it affects the quality of the project.*</p>|
-|*‐We will be disciplined and honest throughout the project.*|
-|*‐ We agree to follow the orange card procedure for a warning to the team member(s).*|
-|‐We agree to not interrupt each other when they are speaking|
-|‐We agree to not get angry at each other during the meetings. If someone hasn’t done their responsibility we will use the card system instead of getting mad.|
+Module 5- Computer Systems (2020-21)
+Project
 
+What are your team goals for the project? What do you want to achieve? What skills do you
+want to improve or work?
+Example:
 
-3    Prepared by: Dipti K. Sarmah
+    To gain knowledge in Python programming and RaspberryPi.
+    To develop a product that meets all the requirements.
+    To gain a better understanding of the concepts taught in this course by applying them to the
+    project
+    To improve our teamwork, communication and project management skills.
+    To improve our agile development skills with Flexibele Scrum, because it is relevant for projects
+    to have efficient meetings and implementing features.
+    3. Team Expectations (Mention at least 3 for each of the criteria)
+    What do you expect from the team members for the a) Participation, b) Meetings, c)
+    Communication, d) Conduct, and e) Conflict
+    a) Participation (What is your group planning for team participation?):
 
-**Module 5‐ Computer Systems (2020‐21)** 
+Example
+As a project team:
+-We agree not to miss any meeting unless something is very important.
 
-**Project** 
-**
+-We agree to pay attention to each other and give a chance to all the members to speak
+and share their views.
 
-**
+-We agree that everyone will make sufficient effort into the project.
 
+-We agree to never miss deadlines, unless the task is impossible within the time limit.
 
-![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.001.png)
+-We agree to make plans when everyone is present or will be notified what the planning
+is.
 
-||
-| :- |
+b) Meetings (What is your expectation from the team for the team meetings?):
 
+Example
+As a project team:
 
+_- We agree to come to the meetings 5 minutes before the allocated time.
 
-|**f) Conflict (How do you handle or how will you react to team conflicts?):**|
-| :- |
-|<p>***Example*** </p><p>*As a project team:* </p><p>*‐ We agree to discuss the entire team the problem and mutually find a solution.*</p>|
-|*‐ We agree to discuss the problem with our mentor(s) and project coordinator if we couldn't identify the solution.*|
-|*‐ We agree to* use the card system when the conflict was caused by one of the group members not living up to their responsibility|
-|‐ *We agree to let the team members that started the conflict, figure it out with each other how to solve the problem before the team will intervene,*|
-|‐ *We agree to* deal with any minor conflicts as soon as they arise to prevent them from growing bigger over time|
+    We agree to prepare ourselves with the ideas, and the tasks to be done before the
+    meeting._
 
+-We agree to have at least one meeting per week.
 
-**4. Team Agreements (These are the final 10 commitments/rules for your team that you agreed on together and promise to follow these rules during the project, Course: Computer Systems, Module 5 (2021‐22).**   
+_- We agree to make sure that everyone knows what todo before the next meeting
 
-I undersigned, hereby declare that I have read, agreed, and accepted all the rules and commitments mentioned in this document and will try my best to follow these rules during the project, Course: Computer Systems, Module 5 (2021‐22). If the rules are not being followed by us, we will bear the consequences as mentioned.
+    We agree to keep the meetings organized so peoplewon’t talk at cross purposes_
 
-|<p>**Commitments** </p><p>**(C)**</p>|**A signal on your commitments (Yes/No)** ||<p>**Team** </p><p>**Member’s** </p><p>**Signature** </p><p>**(Image)**</p>|
-| :- | :-: | :- | :- |
-||Damon |Niek |Yifan |Shuhang |Jelke |Masis||
-|<p>***Example:***   </p><p>*‐As a team* </p><p>*member I’ll* </p><p>*always be on* </p><p>*time in all the* </p><p>*meetings with* </p><p>*the preparation and agenda in* </p><p>*my mind.* </p><p>*‐ As a team* </p><p>*member I’ll* </p><p>*always give* </p><p>*importance to ideas and show respect to all the members.* </p><p>*‐ As a team* </p><p>*member I’ll* </p><p>*always be* </p><p>*transparent with my team.*</p>|Yes |Yes |Yes |Yes |Yes |Yes|<p>`  `*Niek:*</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.002.jpeg)</p><p></p><p>Damon:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.003.png)</p><p></p><p>Yifan:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.004.jpeg)</p><p></p><p>Shuhang:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.005.jpeg)</p><p>Masis:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.006.jpeg)</p><p></p><p>Jelke:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.007.jpeg)</p>|
-|<p>- As a team member I’ll always make sure to communicate my progress to the others</p><p></p><p>- As a team member I’ll always behave in a professional and respectful manner during the meetings</p><p></p><p>- As a team member I’ll always let others know in advance when I won’t be able to attend a meeting</p><p></p><p>- As a team member, I will try to follow the planning, such that we meet the  deadlines.</p><p></p><p>- As a team member I’ll always make sure my work meets the standards of the group in terms of quality</p><p></p><p>- As a team member I’ll always help the other group members when they run into a problem that I’m able to solve</p><p></p><p>- As a team member, I’ll always put 100% dedication into the project.</p><p></p><p>- As a team member I’ll always be on time for the meetings if I don’t have a reason not to be</p><p></p><p>- As a team member I’ll always encourage the other group members to deliver their work in time and will remind them if necessary</p><p></p><p>- As a team member, I’ll take my responsibility as a Scrum Master to communicate with the team member about the progress and keep the team and schedule together.</p>|Yes|Yes|Yes|Yes|Yes|Yes|<p>*Niek:*</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.002.jpeg)</p><p></p><p>Damon:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.003.png)</p><p></p><p>Yifan:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.004.jpeg)</p><p></p><p>Shuhang:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.005.jpeg)</p><p>Masis:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.008.jpeg)</p><p><br>Jelke:</p><p>![](Aspose.Words.692908fd-d16a-41c5-b1cf-c8983a310d1c.007.jpeg)</p>|
-**  
-**
+c) Communication (How do you communicate with each other? Any rules for
+communication?):
 
+Example
+As a project team:
+-We agree to follow one/two online tools for communication. (Discord,whatsapp)
 
+-We agree to decide a venue and time for the physical meetings.
+
+-We agree to check on all online communications(email, discord and canvas) at least in
+the morning./ 3 times a day.
+
+-We agree to be polite with each other while chatting in discord, or speaking in physical
+meetings.
+
+-We agree that we all speak the same language for communicating.
+
+d) Individual Accountability (What is your expectation level for each individual in
+your team for fulfilling team assignments, tasks, and accomplishing
+deadlines?):
+
+Example
+As a project team:
+-We agree that if a team member does not complete the assigned task in time without
+
+intimating us, this is their responsibility.
+
+-We agree to communicate our to-do tasks within the team, and if possible we send
+reminders to each other to have a submission on time.
+
+-We agree that one should inform other members the progress in tasks everyday.
+
+-We agree to let the others know when we encounter difficulties with our tasks so they
+can help out if possible
+
+-We agree to finish our tasks well before the deadline so we won’t run into problems with
+missed deadlines or last-minute submissions
+
+e)Conduct(Howdoyoufollowthedegreeofprofessionalismwithintheteamand
+howdoyoumanageifanyoftheteammembersdoesn’tfollowtheconductor
+fails to fulfill expectations?):
+
+Example
+As a project team :
+-We will not tolerate rudeness in meetings as it affects the quality of the project.
+
+-We will be disciplined and honestthroughouttheproject.
+
+- We agree to follow the orange card procedure for a warning to the team member(s).
+
+-We agree to not interrupt each other when they are speaking
+
+-We agree to not get angry at each other during the meetings. If someone hasn’t done
+their responsibility we will use the card system instead of getting mad.
+
+3 Prepared by: Dipti K. Sarmah
+Module 5- Computer Systems (2020-21)
+Project
+
+f) Conflict (How do you handle or how will you react to team conflicts?):
+
+Example
+
+As a project team:
+
+_- We agree to discuss the entire team the problem and mutually find a solution.
+
+    We agree to discuss the problem with our mentor(s) and project coordinator if we
+    couldn't identify the solution._
+
+- We agree to use the card system when the conflictwas caused by one of the group
+members not living up to their responsibility
+
+    We agree to let the team members that started theconflict, figure it out with each other
+    how to solve the problem before the team will intervene,
+    We agree to deal with any minor conflicts as soonas they arise to prevent them from
+    growing bigger over time
+
+4.TeamAgreements(Thesearethefinal 10 commitments/rulesforyourteamthatyouagreed
+ontogether and promisetofollow theserules during the project,Course: Computer
+Systems, Module 5 (2021-22).
+Iundersigned, herebydeclare thatI haveread,agreed,andacceptedalltherulesand
+commitmentsmentionedinthisdocumentandwilltrymybesttofollowtheserulesduring
+the project,Course: ComputerSystems,Module 5 (2021-22).Iftherulesarenotbeing
+followed by us, we will bear the consequences as mentioned.
+
+Commitments
+(C)
+
+A signal on your commitments (Yes/No) Team
+Member’s
+Signature
+Damon Niek Yifan Shuhang Jelke Masis (Image)
+
+Example:
+-As a team
+member I’ll
+always be on
+time in all the
+meetings with
+the
+preparation
+and agenda
+in
+my mind.
+
+_- As a team
+member I’ll
+always give
+importance to
+ideas and
+show respect
+to all the
+members.
+
+    As a team
+    member I’ll
+    always be
+    transparent
+    with my
+    team._
+
+Yes Yes Yes Yes Yes Yes Niek:
+
+Damon:
+
+Yifan:
+
+Shuhang:
+
+Masis:
+
+Jelke:
+
+    As a team
+    member I’ll
+    always make
+    sure to
+    communicate
+    my progress to
+    the others
+    As a team
+    member I’ll
+    always behave
+    in a professional
+    and respectful
+    manner during
+    the meetings
+    As a team
+    member I’ll
+    always let
+    others know in
+    advance when I
+    won’t be able to
+    attend a
+    meeting
+    As a team
+    member, I will
+    try to follow the
+    planning, such
+    that we meet
+    the deadlines.
+    As a team
+    member I’ll
+    always make
+    sure my work
+    meets the
+    standards of the
+    group in terms
+    of quality
+    As a team
+    member I’ll
+    always help the
+    other group
+    members when
+    they run into a
+    problem that
+    I’m able to solve
+    As a team
+    member, I’ll
+    always put
+    100%
+    dedication
+    into the
+
+Yes Yes Yes Yes Yes Yes Niek:
+
+Damon:
+
+Yifan:
+
+Shuhang:
+
+Masis:
+
+Jelke:
+
+project.
+
+    As a team
+    member I’ll
+    always be on
+    time for the
+    meetings if I
+    don’t have a
+    reason not to be
+    As a team
+    member I’ll
+    always
+    encourage the
+    other group
+    members to
+    deliver their
+    work in time
+    and will remind
+    them if
+    necessary
+    As a team
+    member, I’ll
+    take my
+    responsibility
+    as a Scrum
+    Master to
+    communicate
+    with the team
+    member
+    about the
+    progress and
+    keep the team
+    and schedule
+    together.
 
