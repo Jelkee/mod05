@@ -1,63 +1,23 @@
 <template>
-  <div>
-    <SiteHeader />
-    <button @click="toggleAddRoom">
-      {{ !this.showAddRoom ? "Add room" : "Hide" }}
-    </button>
-    <AddRoom v-if="showAddRoom" @add-room="addRoom" />
-    <Rooms :rooms="rooms" />
-    <SmartComponents :smart_components="smart_components" />
-    <Messages :messages="messages" />
-  </div>
+  <SiteHeader />
+  <router-view />
+  <router-link to="/" v-if="signed_in">Sign out</router-link>
 </template>
 
 <script>
-import SmartComponents from "./components/SmartComponents.vue";
-import Rooms from "./components/Rooms.vue";
 import SiteHeader from "./components/SiteHeader.vue";
-import Messages from "./components/Messages.vue";
-import AddRoom from "./components/AddRoom.vue";
-
-const rooms = [];
-const smart_components = [];
-const messages = [];
 
 export default {
   name: "App",
-  components: { SiteHeader, Rooms, SmartComponents, Messages, AddRoom },
-  data() {
-    return { rooms, smart_components, messages, showAddRoom: false };
-  },
-  methods: {
-    async addRoom(roomName) {
-      let newRoom = { id: this.rooms.length, name: roomName };
-      await fetch("api/rooms", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(newRoom),
-      });
-      this.rooms.push(newRoom);
-    },
-    toggleAddRoom() {
-      this.showAddRoom = !this.showAddRoom;
-    },
-    async retrieveData(item_name) {
-      const res = await fetch(`api/${item_name}`); //See proxy in vue.config.js
-      const data = await res.json();
-      return data;
-    },
-  },
+  components: { SiteHeader },
   computed: {
-    nextID: function() {
-      return this.rooms.length;
+    signed_in() {
+      if (this.$route.path !== "/") {
+        return true;
+      } else {
+        return false;
+      }
     },
-  },
-  async created() {
-    this.rooms = await this.retrieveData("rooms");
-    this.smart_components = await this.retrieveData("smart_components");
-    this.messages = await this.retrieveData("messages");
   },
 };
 </script>
