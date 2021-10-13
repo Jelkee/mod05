@@ -18,23 +18,9 @@ import SiteHeader from "./components/SiteHeader.vue";
 import Messages from "./components/Messages.vue";
 import AddRoom from "./components/AddRoom.vue";
 
-const rooms = [
-  { id: 0, name: "Living room" },
-  { id: 1, name: "Kitchen" },
-];
-
-const smart_components = [
-  { id: 0, roomID: 0, type: "light", name: "Light in living room" },
-  {
-    id: 1,
-    roomID: 0,
-    type: "light_sensor",
-    name: "Light sensor in living room",
-  },
-  { id: 1, roomID: 1, type: "radiator", name: "Radiator in kitchen" },
-];
-
-const messages = [{ id: 0, body: "Hey, this is the first message!" }];
+const rooms = [];
+const smart_components = [];
+const messages = [];
 
 export default {
   name: "App",
@@ -43,17 +29,35 @@ export default {
     return { rooms, smart_components, messages, showAddRoom: false };
   },
   methods: {
-    addRoom(roomName) {
-      this.rooms.push({ id: this.rooms.length, name: roomName });
+    async addRoom(roomName) {
+      let newRoom = { id: this.rooms.length, name: roomName };
+      await fetch("api/rooms", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(newRoom),
+      });
+      this.rooms.push(newRoom);
     },
     toggleAddRoom() {
       this.showAddRoom = !this.showAddRoom;
+    },
+    async retrieveData(item_name) {
+      const res = await fetch(`api/${item_name}`); //See proxy in vue.config.js
+      const data = await res.json();
+      return data;
     },
   },
   computed: {
     nextID: function() {
       return this.rooms.length;
     },
+  },
+  async created() {
+    this.rooms = await this.retrieveData("rooms");
+    this.smart_components = await this.retrieveData("smart_components");
+    this.messages = await this.retrieveData("messages");
   },
 };
 </script>
