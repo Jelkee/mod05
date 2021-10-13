@@ -10,7 +10,7 @@
     },
     {
       "id": 2,
-      "name": "Bedroom 1"
+      "name": "new"
     }
   ],
   "smart_components": [
@@ -37,6 +37,16 @@
     {
       "id": 0,
       "body": "Hey, this is the first message!"
+    }
+  ],
+  "users": [
+    {
+      "id": 0,
+      "name": "User1"
+    },
+    {
+      "id": 1,
+      "name": "User2"
     }
   ]
 }
