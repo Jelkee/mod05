@@ -2,7 +2,12 @@
   <div>
     <p>Rooms:</p>
     <ul>
-      <Room v-for="room in rooms" :key="room.id" :room="room"></Room>
+      <Room
+        v-for="room in rooms"
+        :key="room.id"
+        :room="room"
+        @delete-room="onDeleteRoom"
+      ></Room>
     </ul>
   </div>
 </template>
@@ -16,5 +21,10 @@ export default {
     rooms: Array,
   },
   components: { Room },
+  methods: {
+    onDeleteRoom(id) {
+      this.$emit("delete-room", id);
+    },
+  },
 };
 </script>
