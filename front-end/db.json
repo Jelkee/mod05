@@ -7,13 +7,9 @@
     {
       "id": 1,
       "name": "Kitchen"
-    },
-    {
-      "id": 2,
-      "name": "new"
     }
   ],
-  "smart_components": [
+  "components": [
     {
       "id": 0,
       "roomID": 0,
@@ -47,6 +43,14 @@
     {
       "id": 1,
       "name": "User2"
+    },
+    {
+      "name": "test1",
+      "id": 2
+    },
+    {
+      "name": "test2",
+      "id": 3
     }
   ]
 }

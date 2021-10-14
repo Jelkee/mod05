@@ -9,16 +9,16 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "AddUser",
+  data() {
+    return { username: "" };
+  },
   methods: {
+    ...mapActions(["addUser"]),
     onSubmit() {
-      if (!this.room_name) {
-        alert("Please select a name for the room");
-      } else {
-        this.$emit("add-room", this.room_name);
-        this.room_name = "";
-      }
+      this.addUser(this.username);
     },
   },
 };

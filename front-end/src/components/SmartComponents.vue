@@ -2,21 +2,26 @@
   <div>
     <p>Components:</p>
     <ul>
-      <SmartComponent
-        v-for="smart_component in smart_components"
-        :key="smart_component.id"
-        :smart_component="smart_component"
-      />
+      <li v-for="smart_component in allComponents" :key="smart_component.id">
+        {{ smart_component.name }} - {{ smart_component.type }}
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
-import SmartComponent from "./SmartComponent.vue";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "SmartComponents",
-  props: { smart_components: Array },
-  components: { SmartComponent },
+  computed: {
+    ...mapGetters(["allComponents"]),
+  },
+  methods: {
+    ...mapActions(["retrieveComponents"]),
+  },
+  created() {
+    this.retrieveComponents();
+  },
 };
 </script>

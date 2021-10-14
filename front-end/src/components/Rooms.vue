@@ -2,29 +2,27 @@
   <div>
     <p>Rooms:</p>
     <ul>
-      <Room
-        v-for="room in rooms"
-        :key="room.id"
-        :room="room"
-        @delete-room="onDeleteRoom"
-      ></Room>
+      <li v-for="room in allRooms" :key="room.id">
+        {{ room.name }}
+        <button>Delete</button>
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
-import Room from "./Room.vue";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Rooms",
-  props: {
-    rooms: Array,
-  },
-  components: { Room },
   methods: {
-    onDeleteRoom(id) {
-      this.$emit("delete-room", id);
-    },
+    ...mapActions(["retrieveRooms"]),
+  },
+  computed: {
+    ...mapGetters(["allRooms"]),
+  },
+  created() {
+    this.retrieveRooms();
   },
 };
 </script>
