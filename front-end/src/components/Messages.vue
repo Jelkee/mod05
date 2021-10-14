@@ -1,22 +1,27 @@
 <template>
   <div>
-    <p>Messages</p>
+    <p>Messages:</p>
     <ul>
-      <Message
-        v-for="message in messages"
-        :message="message"
-        :key="message.id"
-      />
+      <li v-for="message in allMessages" :key="message.id">
+        {{ message.body }}
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
-import Message from "./Message.vue";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Messages",
-  props: { messages: Array },
-  components: { Message },
+  methods: {
+    ...mapActions(["retrieveMessages"]),
+  },
+  computed: {
+    ...mapGetters(["allMessages"]),
+  },
+  created() {
+    this.retrieveMessages();
+  },
 };
 </script>
