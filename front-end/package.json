@@ -9,6 +9,7 @@
     "json": "json-server --watch db.json"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "@popperjs/core": "^2.10.2",
     "axios": "^0.23.0",
     "bootstrap": "^5.1.3",

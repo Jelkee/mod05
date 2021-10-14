@@ -1,0 +1,28 @@
+body {
+  background: #f0f0f0 !important;
+}
+
+.sidebar {
+  background: white !important;
+}
+
+.sidebar-brand {
+  color: black !important;
+}
+
+.navbar-brand {
+  color: black !important;
+}
+
+.nav-link {
+  color: black !important;
+}
+
+.nav-link.active {
+  color: black !important;
+}
+
+/* not active */
+.nav-link:not(.active) {
+  color: grey !important;
+}

@@ -4,7 +4,7 @@
     <ul>
       <li v-for="room in allRooms" :key="room.id">
         {{ room.name }}
-        <button>Delete</button>
+        <button @click="deleteRoom(room.id)">Delete</button>
       </li>
     </ul>
   </div>
@@ -16,7 +16,7 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Rooms",
   methods: {
-    ...mapActions(["retrieveRooms"]),
+    ...mapActions(["retrieveRooms", "deleteRoom"]),
   },
   computed: {
     ...mapGetters(["allRooms"]),

@@ -1,14 +1,5 @@
 {
-  "rooms": [
-    {
-      "id": 0,
-      "name": "Living room"
-    },
-    {
-      "id": 1,
-      "name": "Kitchen"
-    }
-  ],
+  "rooms": [],
   "components": [
     {
       "id": 0,
