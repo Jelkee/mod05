@@ -1,13 +1,15 @@
 <template>
-  <div>
-    <p>Rooms:</p>
-    <ul>
-      <li v-for="room in allRooms" :key="room.id">
-        {{ room.name }}
-        <button @click="deleteRoom(room.id)">Delete</button>
-      </li>
-    </ul>
-  </div>
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link active" href="#">Room 1</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Room2</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Room 3</a>
+    </li>
+  </ul>
 </template>
 
 <script>

@@ -1,11 +1,12 @@
 <template>
-  <div>
-    <p>Components:</p>
-    <ul>
-      <li v-for="smart_component in allComponents" :key="smart_component.id">
-        {{ smart_component.name }} - {{ smart_component.type }}
-      </li>
-    </ul>
+  <div class="container-fluid">
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Light</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Living Room</h6>
+        <a href="#" class="card-link">On/Off</a>
+      </div>
+    </div>
   </div>
 </template>
 
