@@ -1,21 +1,28 @@
 {
-  "rooms": [],
+  "rooms": [
+    {
+      "id": 0,
+      "name": "Living room"
+    },
+    { "id": 1, "name": "Kitchen" },
+    { "id": 2, "name": "Bedroom" }
+  ],
   "components": [
     {
       "id": 0,
-      "roomID": 0,
+      "roomId": 0,
       "type": "light",
       "name": "Light in living room"
     },
     {
       "id": 1,
-      "roomID": 0,
+      "roomId": 0,
       "type": "light_sensor",
       "name": "Light sensor in living room"
     },
     {
       "id": 1,
-      "roomID": 1,
+      "roomId": 1,
       "type": "radiator",
       "name": "Radiator in kitchen"
     }

@@ -1,13 +1,11 @@
 <template>
   <ul class="nav">
-    <li class="nav-item">
-      <a class="nav-link active" href="#">Room 1</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">Room2</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">Room 3</a>
+    <li class="nav-item" v-for="room in allRooms" :key="room.id">
+      <router-link
+        :to="{ name: 'Room', params: { id: room.id } }"
+        class="nav-link active"
+        >{{ room.name }}</router-link
+      >
     </li>
   </ul>
 </template>
@@ -16,7 +14,7 @@
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: "Rooms",
+  name: "RoomSelector",
   methods: {
     ...mapActions(["retrieveRooms", "deleteRoom"]),
   },

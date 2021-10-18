@@ -15,7 +15,7 @@ body {
 }
 
 .nav-link {
-  color: black !important;
+  color: grey !important;
 }
 
 .nav-link.active {

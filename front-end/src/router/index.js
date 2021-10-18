@@ -5,6 +5,11 @@ import Dashboard from "../views/Dashboard.vue";
 const routes = [
   { path: "/", name: "Login", component: Login },
   { path: "/dashboard", name: "Dashboard", component: Dashboard },
+  {
+    path: "/dashboard/:id",
+    name: "Room",
+    component: Dashboard,
+  },
 ];
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),

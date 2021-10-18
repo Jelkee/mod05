@@ -12,19 +12,19 @@ const getters = {
 
 const actions = {
   async retrieveRooms({ commit }) {
-    let response = await axios.get(`api/rooms`); //See proxy in vue.config.js
+    let response = await axios.get("http://localhost:3000/rooms"); //See proxy in vue.config.js
     let data = response.data;
     commit("setRooms", data);
   },
 
   async addRoom({ commit }, roomName) {
     let newRoom = { id: this.nextRoomID, name: roomName };
-    let res = await axios.post("api/rooms", newRoom);
+    let res = await axios.post("http://localhost:3000/rooms", newRoom);
     res.status === 201 ? commit("addRoom", newRoom) : alert("An error occured");
   },
 
   async deleteRoom({ commit }, id) {
-    let res = await axios.delete(`api/rooms/${id}`);
+    let res = await axios.delete(`http://localhost:3000/rooms/${id}`);
     res.status === 200 ? commit("deleteRoom", id) : alert("An error occured");
   },
 };
