@@ -5,7 +5,7 @@ import Components from "../views/Components.vue";
 import Rooms from "../views/Rooms.vue";
 
 const routes = [
-  { path: "/login", name: "Login", component: Login },
+  { path: "/", name: "Login", component: Login },
   { path: "/dashboard", name: "Dashboard", component: Dashboard },
   {
     path: "/dashboard/:id",

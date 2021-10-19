@@ -2,7 +2,7 @@
   "rooms": [
     {
       "id": 0,
-      "name": "Living room"
+      "name": "Living room 1"
     }
   ],
   "components": [
@@ -21,20 +21,14 @@
   ],
   "users": [
     {
-      "id": 0,
-      "name": "User1"
+      "email": "admin@mail.com",
+      "password": "$2a$10$g3SfEEV5jryMCE5gXztu0OeFi7fuL8TypZkXuWcK.O8h5PqDwYaJ2",
+      "id": 1
     },
     {
-      "id": 1,
-      "name": "User2"
-    },
-    {
-      "name": "test1",
+      "email": "user@mail.com",
+      "password": "$2a$10$IrLU7FdmUcc.p9akiS40ROA30Oen5hbQAJRL6fGCUrXXSBe9QO4ry",
       "id": 2
-    },
-    {
-      "name": "test2",
-      "id": 3
     }
   ]
 }

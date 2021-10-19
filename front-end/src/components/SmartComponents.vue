@@ -7,7 +7,7 @@
     <div
       class="card"
       style="width: 18rem;"
-      v-for="component in getComponents(getRoomId)"
+      v-for="component in getComponents(roomId)"
       :key="component.id"
     >
       <div class="card-body">
@@ -34,7 +34,7 @@ export default {
   name: "SmartComponents",
   computed: {
     ...mapGetters(["getComponents", "allComponents"]),
-    getRoomId: function() {
+    roomId: function() {
       return Number(this.$route.params.id);
     },
     noComponents: function() {
