@@ -1,18 +1,10 @@
-body {
-  background: #f0f0f0 !important;
-}
-
-.sidebar {
-  background: white !important;
-}
-
-.sidebar-brand {
+/* .sidebar-brand {
   color: black !important;
-}
+} */
 
-.navbar-brand {
+/* .navbar-brand {
   color: black !important;
-}
+} */
 
 .nav-link {
   color: grey !important;
