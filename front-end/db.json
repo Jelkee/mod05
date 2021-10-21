@@ -2,7 +2,7 @@
   "rooms": [
     {
       "id": 0,
-      "name": "Living room 1"
+      "name": "Living room"
     }
   ],
   "components": [
@@ -11,6 +11,12 @@
       "roomId": 0,
       "type": "light",
       "name": "Light in living room"
+    },
+    {
+      "id": 1,
+      "roomID": 0,
+      "type": "LightSensor",
+      "name": "Lightsensor in living room"
     }
   ],
   "messages": [

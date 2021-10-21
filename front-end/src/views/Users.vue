@@ -1,4 +1,6 @@
-<template><div class="container"></div> </template>
+<template>
+  <div>Placeholder</div>
+</template>
 
 <script>
 export default { name: "Users" };

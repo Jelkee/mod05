@@ -1,6 +1,6 @@
 <template>
   <div id="wrapper">
-    <SideBar />
+    <!-- <SideBar /> -->
 
     <div id="content-wrapper" class="d-flex flex-column">
       <div id="content">
@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import SideBar from "../components/SideBar.vue";
-import TopBar from "../components/TopBar.vue";
-import RoomsTable from "../components/RoomsTable.vue";
+// import SideBar from "../components/layout/SideBar.vue";
+import TopBar from "../components/layout/TopBar.vue";
+import RoomsTable from "../components/tables/RoomsTable.vue";
 
 export default {
   name: "Rooms",
-  components: { RoomsTable, SideBar, TopBar },
+  components: { RoomsTable, TopBar },
 };
 </script>

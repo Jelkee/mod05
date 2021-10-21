@@ -17,8 +17,8 @@
 <script>
 import RoomSelector from "../components/RoomSelector.vue";
 import SmartComponents from "../components/SmartComponents.vue";
-import SideBar from "../components/SideBar.vue";
-import TopBar from "../components/TopBar.vue";
+import SideBar from "../components/layout/SideBar.vue";
+import TopBar from "../components/layout/TopBar.vue";
 
 export default {
   name: "Dashboard",

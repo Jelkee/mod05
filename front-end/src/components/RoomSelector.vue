@@ -1,10 +1,5 @@
 <template>
   <ul class="nav">
-    <li class="nav-item">
-      <router-link to="/dashboard" class="nav-link active">
-        Overview
-      </router-link>
-    </li>
     <li class="nav-item" v-for="room in allRooms" :key="room.id">
       <router-link
         :to="{ name: 'Room', params: { id: room.id } }"

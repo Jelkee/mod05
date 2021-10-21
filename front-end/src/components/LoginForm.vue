@@ -1,7 +1,7 @@
 <template>
   <!-- Outer Row -->
   <div class="row justify-content-center">
-    <div class="col-xl-6 col-lg-6 col-md-4">
+    <div class="col-xl-3 col-lg-3 col-md-3">
       <div class="card o-hidden border-0 shadow-lg my-5">
         <div class="card-body p-0">
           <!-- Nested Row within Card Body -->
@@ -46,9 +46,7 @@
               <button type="submit" class="btn btn-primary btn-user btn-block">
                 Login
               </button>
-              <hr />
             </form>
-            <hr />
             <!-- <div class="text-center">
                   <a class="small" href="#">Forgot Password?</a>
                 </div> -->
@@ -86,7 +84,7 @@ export default {
       if (res.status === 200) {
         localStorage.setItem("token", res.data.token);
         this.login();
-        this.$router.push("/dashboard");
+        this.$router.push("/dashboard/0");
       }
     },
   },

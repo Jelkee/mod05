@@ -5,7 +5,7 @@
     <!-- Topbar Navbar -->
     <ul class="navbar-nav ml-auto">
       <!-- Nav Item - Alerts -->
-      <li class="nav-item dropdown no-arrow mx-1">
+      <!-- <li class="nav-item dropdown no-arrow mx-1">
         <a
           class="nav-link dropdown-toggle"
           href="#"
@@ -15,12 +15,12 @@
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <i class="fas fa-bell fa-fw"></i>
-          <!-- Counter - Alerts -->
-          <span class="badge badge-danger badge-counter"></span>
-        </a>
-        <!-- Dropdown - Alerts -->
-        <div
+          <i class="fas fa-bell fa-fw"></i> -->
+      <!-- Counter - Alerts -->
+      <!-- <span class="badge badge-danger badge-counter"></span>
+        </a> -->
+      <!-- Dropdown - Alerts -->
+      <!-- <div
           class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
           aria-labelledby="alertsDropdown"
         >
@@ -31,10 +31,10 @@
             >Show All Alerts</a
           >
         </div>
-      </li>
+      </li> -->
 
       <!-- Nav Item - Messages -->
-      <li class="nav-item dropdown no-arrow mx-1">
+      <!-- <li class="nav-item dropdown no-arrow mx-1">
         <a
           class="nav-link dropdown-toggle"
           href="#"
@@ -44,12 +44,12 @@
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <i class="fas fa-envelope fa-fw"></i>
-          <!-- Counter - Messages -->
-          <span class="badge badge-danger badge-counter"></span>
-        </a>
-        <!-- Dropdown - Messages -->
-        <div
+          <i class="fas fa-envelope fa-fw"></i> -->
+      <!-- Counter - Messages -->
+      <!-- <span class="badge badge-danger badge-counter"></span>
+        </a> -->
+      <!-- Dropdown - Messages -->
+      <!-- <div
           class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
           aria-labelledby="messagesDropdown"
         >
@@ -60,9 +60,9 @@
             >Read More Messages</a
           >
         </div>
-      </li>
+      </li> -->
 
-      <div class="topbar-divider d-none d-sm-block"></div>
+      <!-- <div class="topbar-divider d-none d-sm-block"></div> -->
 
       <!-- Nav Item - User Information -->
       <li class="nav-item dropdown no-arrow">
@@ -71,7 +71,7 @@
           href="#"
           id="userDropdown"
           role="button"
-          data-toggle="dropdown"
+          data-bs-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
         >
@@ -85,7 +85,7 @@
           class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
           aria-labelledby="userDropdown"
         >
-          <a class="dropdown-item" href="#">
+          <!-- <a class="dropdown-item" href="#">
             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
             Profile
           </a>
@@ -93,16 +93,11 @@
             <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
             Settings
           </a>
-          <div class="dropdown-divider"></div>
-          <a
-            class="dropdown-item"
-            href="#"
-            data-toggle="modal"
-            data-target="#logoutModal"
-          >
+          <div class="dropdown-divider"></div> -->
+          <router-link to="/" class="dropdown-item">
             <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
             Logout
-          </a>
+          </router-link>
         </div>
       </li>
     </ul>
