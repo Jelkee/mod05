@@ -1,21 +1,21 @@
 <template>
   <!-- Sidebar -->
-  <ul class="navbar-nav sidebar accordion" id="accordionSidebar">
+  <ul class="navbar-nav sidebar accordion bg-white" id="accordionSidebar">
     <!-- Sidebar - Brand -->
     <span
       class="sidebar-brand d-flex align-items-center justify-content-center"
     >
       <div class="sidebar-brand-icon">
-        <i class="fas fa-home"></i>
+        <i class="fas fa-home text-dark"></i>
       </div>
-      <div class="sidebar-brand-text mx-1">Raspberry Home</div>
+      <div class="sidebar-brand-text text-dark mx-1">Raspberry Home</div>
     </span>
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-      <router-link to="/dashboard" class="nav-link">
-        <i class="fas fa-fw fa-tachometer-alt"></i>
-        <span>Dashboard</span></router-link
+      <router-link to="/dashboard" class="nav-link text">
+        <i class="fas fa-fw fa-tachometer-alt text-dark"></i>
+        <span class="text-dark">Dashboard</span></router-link
       >
     </li>
 
