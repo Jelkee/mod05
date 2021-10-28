@@ -1,0 +1,23 @@
+{% macro userTable(users) -%}
+<table class="table">
+  <thead>
+    <th>Id</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th></th>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{user.id}}</td>
+      <td>{{user.username}}</td>
+      <td>{{user.email}}</td>
+      <td>
+        <button class="btn btn-primary">Edit</button>
+        <button class="btn btn-primary">Delete</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%- endmacro %}

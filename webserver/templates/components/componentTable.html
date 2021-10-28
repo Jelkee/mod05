@@ -1,0 +1,38 @@
+{% macro componentTable(components, rooms) -%}
+<table class="table">
+  <thead>
+    <th>Id</th>
+    <th>Name</th>
+    <th>GPIO Pin</th>
+    <th>Room</th>
+    <th></th>
+  </thead>
+  <tbody>
+    {% for component in components %}
+    <tr>
+      <td>{{component.id}}</td>
+      <td>{{component.name}}</td>
+      <td>
+        <select class="form-select">
+          {% for i in range(17) %}
+          <option {{ 'selected' if i == component.gpio|int }} value="{{i}}">{{i}}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td>
+          <select class="form-select">
+          {% for room in rooms %}
+          <option {{ 'selected' if room.id|int == component.room|int }} value="{{room.id}}">{{room.name}}</option>
+          {% endfor %}
+          <option value="{{-1}}">Edit Rooms...</option>
+        </select>
+    </td>
+      <td>
+        <button class="btn btn-primary">Edit</button>
+        <button class="btn btn-primary">Delete</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%- endmacro %}

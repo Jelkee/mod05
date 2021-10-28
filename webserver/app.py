@@ -16,6 +16,7 @@ local_ip = socket.gethostbyname(hostname)
 
 app = Flask(__name__)
 templateData = {}
+rooms = [{'id': '0', 'name': 'Living room'}, {'id': '1', 'name': 'Kitchen'}]
 
 #render with template and templateData
 @app.route('/')
@@ -34,14 +35,29 @@ def hello():
     resp.set_cookie('sessionID', expires=0)
     return resp
 
-@app.route('/home')
-def home():
+@app.route('/home/<int:id>')
+def home(id):
     sessionID = request.cookies.get('sessionID')
     if sessionID:
-        return render_template('home.html')
+        return render_template('views/home.html', activeRoomId=id, rooms=rooms, username='Username', selected=id)
     else:
         return redirect(url_for('login'))
 
+@app.route('/components')
+def components():
+    components = [{'id': '0', 'name': 'Light in living room', 'gpio': '14', 'room': '1'}]
+    return render_template('views/components.html', components=components, rooms=rooms)
+
+@app.route('/users')
+def users():
+    users = [{'id': '0', 'username': 'FirstUser', 'email': 'first@user.com'}, 
+    {'id': '1', 'username': 'SecondUser', 'email': 'second@user.com'}
+    ]
+    return render_template('views/users.html', users=users)
+
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
@@ -49,7 +65,7 @@ def login():
         #if logged in already, then go to home
         sessionID = request.cookies.get('sessionID')
         if sessionID:
-            return redirect(url_for('home'))
+            return redirect(url_for('home', id=0))
         else: # user trying to log in
             #first get the username and password of login page.
 
@@ -63,12 +79,12 @@ def login():
             print("username: %s     password: %s ", username, password )
 
 
-            resp = make_response(redirect(url_for('home')))
+            resp = make_response(redirect('/home/0'))
             resp.set_cookie('sessionID', "5")
             return resp
 
     else:
-        return render_template('login.html')
+        return render_template('views/login.html')
 
 
 

@@ -1,0 +1,15 @@
+<!-- prettier-ignore -->
+{% from 'components/componentTable.html' import componentTable %}
+{% from 'components/sidebar.html' import sidebar %} 
+{% from 'components/topbar.html' import topbar %}
+{% extends 'base-loggedin.html' %}
+
+<!-- prettier-ignore -->
+{% block head %}
+<title>Components</title>
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block content %}
+{{componentTable(components, rooms)}}
+{% endblock %}

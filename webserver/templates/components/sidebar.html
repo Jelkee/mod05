@@ -1,0 +1,36 @@
+{% macro sidebar() -%}
+<ul class="navbar-nav sidebar accordion bg-white" id="accordionSidebar">
+  <!-- Sidebar - Brand -->
+  <span class="sidebar-brand d-flex align-items-center justify-content-center">
+    <div class="sidebar-brand-icon">
+      <i class="fas fa-home text-dark"></i>
+    </div>
+    <div class="sidebar-brand-text text-dark mx-1">Raspberry Home</div>
+  </span>
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item active">
+    <a href="/home/0" class="nav-link text">
+      <i class="fas fa-fw fa-tachometer-alt text-dark"></i>
+      <span class="text-dark">Dashboard</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Components -->
+  <li class="nav-item">
+    <a href="/components" class="nav-link text">
+      <i class="fas fa-puzzle-piece text-dark"></i>
+      <span class="text-dark">Components</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Users -->
+  <li class="nav-item">
+    <a href="/users" class="nav-link text">
+      <i class="fas fa-users text-dark"></i>
+      <span class="text-dark">Users</span>
+    </a>
+  </li>
+</ul>
+
+{%- endmacro %}

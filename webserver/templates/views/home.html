@@ -1,0 +1,17 @@
+<!-- prettier-ignore -->
+{% from 'components/sidebar.html' import sidebar %} 
+{% from 'components/topbar.html' import topbar %}
+{% from 'components/roomSelector.html' import roomSelector %}
+{% from 'components/smartComponents.html' import smartComponents %}
+{% extends 'base-loggedin.html' %}
+
+<!-- prettier-ignore -->
+{% block head %}
+<title>Home</title>
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block content %}
+{{roomSelector(rooms, selected)}}
+{{smartComponents()}}
+{% endblock %}

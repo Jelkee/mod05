@@ -1,0 +1,15 @@
+<!-- prettier-ignore -->
+{% from 'components/sidebar.html' import sidebar %} 
+{% from 'components/topbar.html' import topbar %}
+{% from 'components/userTable.html' import userTable %}
+{% extends 'base-loggedin.html' %}
+
+<!-- prettier-ignore -->
+{% block head %}
+<title>Users</title>
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block content %}
+{{userTable(users)}}
+{% endblock %}
