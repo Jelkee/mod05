@@ -1,5 +1,10 @@
 {% macro roomSelector(rooms, selected) -%}
 <ul class="nav">
+  <li class="nav-item" key="0">
+    <a href="/home/0" class="nav-link {{'active' if 0 == selected|int }}"
+      >Overview</a
+    >
+  </li>
   {% for room in rooms %}
   <li class="nav-item" key="{{ room.id }}">
     <a

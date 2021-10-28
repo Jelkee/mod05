@@ -13,7 +13,9 @@
           <input
             class="form-check-input"
             type="checkbox"
-            id="flexSwitchCheckDefault"
+            id="flexSwitchLights"
+            name="lights"
+            onchange="Postmanual(this)"
           />
         </div>
       </div>
@@ -31,11 +33,78 @@
           <input
             class="form-check-input"
             type="checkbox"
-            id="flexSwitchCheckDefault"
+            id="flexSwitchAutomatic"
+            name="automatic"
+            onchange="PostAutomatic(this)"
           />
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  function Postmanual(checkboxElem) {
+    console.log("Light toggled manually");
+    var xhr = new XMLHttpRequest();
+    yourUrl = "http://localhost:8080/light";
+    xhr.open("POST", yourUrl, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    //alert("PostManual is Used and status of check is: " + checkboxElem.checked)
+    if (checkboxElem.checked) {
+      xhr.send(
+        JSON.stringify({
+          switchTo: "True",
+        })
+      );
+    } else {
+      xhr.send(
+        JSON.stringify({
+          switchTo: "False",
+        })
+      );
+    }
+  }
+
+  function PostAutomatic(checkboxElem) {
+    console.log("Light toggled automatically");
+    if (document.getElementById("flexSwitchAutomatic").checked == true) {
+      document.getElementById("flexSwitchLights").disabled = true;
+    } else if (
+      document.getElementById("flexSwitchAutomatic").checked == false
+    ) {
+      document.getElementById("flexSwitchLights").disabled = false;
+    }
+    var xhr = new XMLHttpRequest();
+    yourUrl = "http://localhost:8080/lightsensor";
+    xhr.open("POST", yourUrl, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    //alert("PostManual is Used and status of check is: " + checkboxElem.checked)
+    if (checkboxElem.checked) {
+      xhr.send(
+        JSON.stringify({
+          switchTo: "True",
+        })
+      );
+    } else {
+      xhr.send(
+        JSON.stringify({
+          switchTo: "False",
+        })
+      );
+      xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          if (xhr.response == "0") {
+            document.getElementById("flexSwitchLights").checked = false;
+          } else if (xhr.response == "1") {
+            document.getElementById("flexSwitchLights").checked = true;
+          }
+        }
+      };
+    }
+  }
+</script>
+
 {%- endmacro %}
