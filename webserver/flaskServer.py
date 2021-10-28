@@ -4,18 +4,27 @@ import socket
 import requests
 import psycopg2
 
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
+from random import randint
 
-
-
-
+import RPi.GPIO as GPIO
+import time
+import lightsensor
+import multiprocessing
+automaticProcess = "null"
+processList = []
+lights = [12] #Enter the pins which are connected to the leds here
+darkness = 2000000 #The amount of time needed for the sensor to 'collect enough light' to turn on the lights.
+enableLoopSensor = True
 hostname = socket.gethostname()
 local_ip = socket.gethostbyname(hostname)
 
 
 app = Flask(__name__)
+app.config.from_object(__name__)
 templateData = {}
+
+activeSensor = False
+
 
 #render with template and templateData
 @app.route('/')
@@ -29,47 +38,233 @@ def hello():
     print("reset cookies")
     requests.session().cookies.clear()
     resp = make_response(render_template('main.html', **templateData))
-
     print(request.cookies)
     resp.set_cookie('sessionID', expires=0)
     return resp
 
-@app.route('/home')
+
+@app.route('/home', methods = ['GET'])
 def home():
+    #get the sessionID and check there even an sessionID
     sessionID = request.cookies.get('sessionID')
+
     if sessionID:
-        return render_template('home.html')
-    else:
+        query =  "SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'"+sessionID+"\'"
+        result = simpleSQLquery(query)
+
+        # print(str(simpleSQLquery("SELECT * FROM mod5.sessions")))
+        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and return home page
+        if(result[0][0] == 1):
+            return render_template('home.html')
+        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+            
+            resp = make_response(redirect(url_for('login')))
+            resp.set_cookie('sessionID', expires=0)
+            return resp
+    else: #the user doesnt have an sessionID, so go to login page
         return redirect(url_for('login'))
+
 
 
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
-    if request.method == "POST":
-        #if logged in already, then go to home
+    results = ""
+    sessionID = request.cookies.get('sessionID')
+    if request.method == "POST" and not sessionID:
+        #only when you do POST with no sessionID, then you can try to login with an giving sessionTOken
+    
+        #first get the username and password of login page.
+    
+
+
+        username = request.form['username']
+        password = request.form['password']
+
+        #then check database, if credentitials correct, then create session token
+        print("username: %s     password: %s ", username, password )
+        
+        query = f"SELECT uid FROM mod5.users WHERE username = \'{username}\' AND password = \'{password}\'"
+
+        results = simpleSQLquery(query)
+
+        print(str(results))
+        #create session token and check if already exist session token exist
+        if (results):
+            userID = results[0][0] 
+            print("credentitials correct!\n")
+            while(True):
+                sessionToken = randint(1,1000)
+                print(sessionToken)
+
+                #check if already exist
+                query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionToken}\'"
+                result = simpleSQLquery(query)
+                #if the session does not yet exist, then the result should give an 0 count
+                if(result[0][0] == 0):
+                    query = f"INSERT INTO mod5.sessions (uid, sessionid) VALUES (\'{userID}\', \'{sessionToken}\')"
+                    resultInsert = SQLqueryInsert(query)
+                    if(resultInsert == "Succeeded!"): #means no Exceptions and everything went well
+                        resp = make_response(redirect(url_for('home')))
+                        resp.set_cookie('sessionID', str(sessionToken))
+                        #you are done and you can visit the home with an valid session token!
+                        return resp
+                    else: # there is an exception return it
+                        resp = make_response("Something went wrong with the database: " + str(resultInsert))
+                        #someting went wrong so try later agian
+                        return resp 
+                        
+                #session does exist, so make another sessionToken, start the loop 
+
+
+        else:
+            resp = make_response("wrong credentitials, try again ")
+        return resp
+
+
+    #the rest that will be POST with a sessionID, or GET methods with/without sessionID        
+    else: #check if user is logged in already for the GET login page
         sessionID = request.cookies.get('sessionID')
         if sessionID:
-            return redirect(url_for('home'))
-        else: # user trying to log in
-            #first get the username and password of login page.
+            query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionID}\'"
+            result = simpleSQLquery(query)
+            #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and forward home page
+            if(result[0][0] == 1):
+                return redirect(url_for('home'))
+            else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+                resp = make_response(render_template('login.html'))
+                resp.set_cookie('sessionID', expires=0)
+                return resp
+        else: #the user doesnt have an sessionID, so go to login page
 
-            username = request.form['username']
-            password = request.form['password']
+            return render_template('login.html')
 
 
-            #then check database
-            #if credentitials correct, then create session token
-
-            print("username: %s     password: %s ", username, password )
 
 
-            resp = make_response(redirect(url_for('home')))
-            resp.set_cookie('sessionID', "5")
+@app.route('/light', methods = ['POST'])
+def switchlight():
+    #check if user is logged in already for the GET login page
+    print("Trying to switch light")
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionID}\'"
+        result = simpleSQLquery(query)
+        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
+        if(result[0][0] == 1):
+            
+            #switch light....
+            print("now switch the light chosen: ")
+            
+            
+            json_data = request.json
+
+            switchTo = json_data["switchTo"]
+
+            if switchTo == "True":
+                turn_on_lights()
+            elif switchTo == "False":
+                turn_off_lights()
+
+
+        
+
+            return  switchTo
+
+
+        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+            resp = make_response(redirect(url_for('login')))
+            resp.set_cookie('sessionID', expires=0)
             return resp
+    
+    #the user doesnt have an sessionID, therefore not privileges to chance lights
 
-    else:
-        return render_template('login.html')
+@app.route('/lightsensor', methods = ['POST'])
+def switchAutomatic():
+    #check if user is logged in already for the GET login page
+    print("Trying to switch light")
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionID}\'"
+        result = simpleSQLquery(query)
+        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
+        if(result[0][0] == 1):
+            
+            
+            json_data = request.json
 
+            switchTo = json_data["switchTo"]
+
+            if switchTo == "True":
+                enableLoopSensor = True
+                automaticProcess = multiprocessing.Process(target=automatic_lights)
+                automaticProcess.start()
+                processList.append(automaticProcess)
+                return str(getStatusLight())
+            elif switchTo == "False":
+                enableLoopSensor = False
+                for process in processList:
+                    process.terminate()
+                return str(getStatusLight())
+                #stop the automatic-lights thread 
+                
+
+
+        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+            resp = make_response(redirect(url_for('login')))
+            resp.set_cookie('sessionID', expires=0)
+            return resp
+    
+    #the user doesnt have an sessionID, therefore not privileges to chance lights
+
+def getStatusLight():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(lights[0],GPIO.OUT)
+    return GPIO.input(lights[0])
+    
+def turn_on_lights():
+    for led in lights:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
+        GPIO.setup(led,GPIO.OUT)
+        GPIO.output(led,GPIO.HIGH)
+       
+        
+def turn_off_lights():
+    for led in lights:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
+        GPIO.setup(led,GPIO.OUT)
+        GPIO.output(led,GPIO.LOW)
+
+def turn_on_light(pin):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,GPIO.HIGH)
+
+
+def turn_off_light(pin):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,GPIO.LOW)
+
+def automatic_lights():
+    turn_off_lights()
+    global enableLoopSensor
+    while enableLoopSensor:
+        print(lightsensor.get_light())
+        if lightsensor.get_light() > darkness:
+            turn_on_lights()
+            print(GPIO.input(12))
+            print("Lights are on")
+        else:
+            turn_off_lights()
+            print("Lights are off")
+            print(GPIO.input(12))
+        time.sleep(1)
+    print("end of automatic lights")
 
 
 
@@ -106,38 +301,32 @@ dbhost = "bronto.ewi.utwente.nl"
 dbName = 'dab_di20212b_189'
 dbUser = "dab_di20212b_189"
 dbPass = "x9kEMAy6W07IEd1i"
-url = "postgresql://" + dbUser + ":" + dbPass + "@" + dbhost + ":5432/" + dbName
-
-app.config['SQLALCHEMY_DATABASE_URI'] = url
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-
-db = SQLAlchemy(app)
-
-# test the database
-@app.route('/database')
-def testdb():
-    try:
-        db.session.query(text('1')).from_statement(text('SELECT 1')).all()
-        return '<h1>It works.</h1>'
-    except Exception as e:
-        # e holds description of the error
-        error_text = "<p>The error:<br>" + str(e) + "</p>"
-        hed = '<h1>Something is broken.</h1>'
-        return hed + error_text
-
 
 
 """pip install psycopg2
 connection between flask and database by Psycopg2
 """
 @app.route('/db2')
-def condb():
-    result = ""
-    try:
+def db2Test():
+    query = "SELECT * FROM mod5.users"
+    result = simpleSQLquery(query)
+    return str(result) + "the first row and column of result will be the id of result[0][0]: " +  str(result[0][0])
 
+@app.route('/db2sessions')
+def dbSessions():
+    query = "insert into mod5.sessions(sessionid, uid) values(\'6\',\'1\')"
+    result = SQLqueryInsert(query)
+    return "result of Inserting in session:     " + str(result)
+
+
+
+
+#because INSERT, (UPDATE and DELETE) won't result any information, we dont fetch anything, but when there is an exception, we now something went wrong
+def SQLqueryInsert(query):
+    result = "Succeeded!"
+    try:
         try:
-            print('PostgreSQL database version of psycopg2:')
+            print('PostgreSQL in psycopg2 of the query:' + query)
             conn = psycopg2.connect(
             host=dbhost,
             database=dbUser,
@@ -149,32 +338,59 @@ def condb():
         # create a cursor
         cursor = conn.cursor()
 
-        query = "SELECT * FROM mod5.users"
+        cursor.execute(query)
+
+        #commit to confirm the transaction for INSERT UPDATE and DELETE
+        conn.commit()
+    
+        # dont fetch result
+
+        # close the communication with the PostgreSQL
+        cursor.close()
+    except Exception as e:
+        result = "Exception: " +str(e)
+        print(result)
+    conn.close()
+    return result
+
+
+
+def simpleSQLquery(query):
+    result = ""
+
+    try:
+        print('PostgreSQL in psycopg2 of the query:' + query)
+        global conn
+        conn = psycopg2.connect(
+        host=dbhost,
+        database=dbUser,
+        user=dbUser,
+        password=dbPass)
+    
+
+        # create a cursor
+        cursor = conn.cursor()
+
         # query = "SELECT VERSION()"
         cursor.execute(query)
 
         # cursor.execute("CREATE TABLE mod5.test (id serial PRIMARY KEY, num integer, data varchar);")
 
-        # display the PostgreSQL database server version
-        result = cursor.fetchone()
+        result = cursor.fetchall()
         print(str(result))
         # close the communication with the PostgreSQL
         cursor.close()
     except Exception as e:
-        print(e)
-        return str(result)
-    return str(result)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
+        result = "Exception: " +str(e)
+        print(result)
+    conn.close()
+    return result
 
 
 print(local_ip)
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", port=8080)
 
 
 # with requests.session() as s:
@@ -184,3 +400,8 @@ if __name__ == '__main__':
 #     # post to the login form
 #     r = s.post(url1, data=payload)
 #     print(r.text)
+
+
+
+
+
