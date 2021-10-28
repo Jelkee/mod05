@@ -38,13 +38,13 @@
       <div id="content">
         <nav class="navbar navbar-expand topbar mb-4 static-top">
           <!-- Welcome text -->
-          <span class="navbar-brand mb-0 h1 text-dark">Welcome <b>User</b></span>
+          <span class="navbar-brand mb-0 h1 text-dark">Welcome <b>Bob</b></span>
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-dark small">User Name</span>
+                <span class="mr-2 d-none d-lg-inline text-dark small">bob</span>
                 <!-- <img class="img-profile rounded-circle" src="" /> -->
               </a>
               <!-- Dropdown - User Information -->
@@ -70,7 +70,7 @@
                 </div>
                 <div class="col-md-2 float-right">
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                    <input class="form-check-input" type="checkbox" id="flexSwitchLights" name="lights" onchange="Postmanual(this)"/>
                   </div>
                 </div>
               </div>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="col-md-2 float-right">
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                    <input class="form-check-input" type="checkbox" id="flexSwitchAutomatic" name="automatic "onchange="PostAutomatic(this)" />
                   </div>
                 </div>
               </div>
@@ -102,5 +102,60 @@
 
 
 </body>
+<script>
+function Postmanual(checkboxElem) {
+    var xhr = new XMLHttpRequest();
+    yourUrl = "http://localhost:8080/light"
+    xhr.open("POST", yourUrl, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    //alert("PostManual is Used and status of check is: " + checkboxElem.checked)
+    if (checkboxElem.checked) {
+        xhr.send(JSON.stringify({
+            switchTo : "True"
+        }));
+    } else {
+        xhr.send(JSON.stringify({
+            switchTo: "False"
+        }));
+
+    }
+}
+
+function PostAutomatic(checkboxElem) {
+  if (document.getElementById("flexSwitchAutomatic").checked == true){
+    document.getElementById("flexSwitchLights").disabled = true;
+  } else if(document.getElementById("flexSwitchAutomatic").checked == false){
+    document.getElementById("flexSwitchLights").disabled = false;
+  }
+  var xhr = new XMLHttpRequest();
+  yourUrl = "http://localhost:8080/lightsensor"
+  xhr.open("POST", yourUrl, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+
+  //alert("PostManual is Used and status of check is: " + checkboxElem.checked)
+  if (checkboxElem.checked) {
+      xhr.send(JSON.stringify({
+          switchTo : "True"
+      }));
+  } else {
+      xhr.send(JSON.stringify({
+          switchTo: "False"
+      }));
+      xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+                    
+          if(xhr.response == "0"){
+            document.getElementById("flexSwitchLights").checked = false;
+          } else if (xhr.response == "1"){
+            document.getElementById("flexSwitchLights").checked = true;
+          }
+        }
+      }
+
+
+  }
+}
+</script>
 
 </html>
