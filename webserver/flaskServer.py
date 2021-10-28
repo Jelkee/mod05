@@ -13,7 +13,7 @@ import multiprocessing
 automaticProcess = "null"
 processList = []
 lights = [12] #Enter the pins which are connected to the leds here
-darkness = 2000000 #The amount of time needed for the sensor to 'collect enough light' to turn on the lights.
+darkness = 100000 #The amount of time needed for the sensor to 'collect enough light' to turn on the lights.
 enableLoopSensor = True
 hostname = socket.gethostname()
 local_ip = socket.gethostbyname(hostname)
