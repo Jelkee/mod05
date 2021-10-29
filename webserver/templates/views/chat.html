@@ -31,20 +31,27 @@
           <input type="text" class="form-control" placeholder="Search..." />
         </div>
 
-        <!-- Chat List -->
+        <!-- List of all users in the household that user can chat with -->
         <ul class="list-unstyled chat-list mt-2 mb-0">
-          <li class="clearfix active">
-            <img
+          <!-- prettier-ignore -->
+          {% for user in users %} 
+          {% if user.username != session["username"] %}
+          <li
+            class="clearfix {{'active' if user.id|int == request.path.split('/')[2]|int}}"
+            onclick="location.href='http:/\/localhost:5000/chat/{{user.id}}'"
+          >
+            <!-- <img
               src="https://bootdey.com/img/Content/avatar/avatar2.png"
               alt="avatar"
-            />
+            /> -->
             <div class="about">
-              <div class="name">Bob</div>
+              <div class="name">{{user.username}}</div>
               <!-- <div class="status">
                     <i class="fa fa-circle online"></i> online
                   </div> -->
             </div>
           </li>
+          {% endif %} {% endfor %}
         </ul>
       </div>
 
@@ -58,13 +65,13 @@
                 data-toggle="modal"
                 data-target="#view_info"
               >
-                <img
+                <!-- <img
                   src="https://bootdey.com/img/Content/avatar/avatar2.png"
                   alt="avatar"
-                />
+                /> -->
               </a>
               <div class="chat-about">
-                <h6 class="m-b-0">Aiden Chavez</h6>
+                <h6 class="m-b-0">bob</h6>
                 <!-- <small>Last seen: 2 hours ago</small> -->
               </div>
             </div>
@@ -72,21 +79,34 @@
         </div>
         <div class="chat-history">
           <ul class="m-b-0" id="messages">
+            <!-- prettier-ignore -->
             {% for message in messages %}
+            {% if message.from == session["username"] and message.to == users[request.path.split('/')[2]|int].username %}
+            <li class="clearfix">
+              <div class="message-data text-right">
+                <span class="message-data-time">10:10 AM, Today</span>
+              </div>
+              <div class="message other-message float-right">
+                {{message.content}}
+              </div>
+            </li>
+            {% elif message.from ==
+            users[request.path.split('/')[2]|int].username and message.to ==
+            session["username"] %}
             <li class="clearfix">
               <div class="message-data">
                 <span class="message-data-time">10:15 AM, Today</span>
               </div>
-              <div class="message my-message">{{message.message}}</div>
+              <div class="message my-message">{{message.content}}</div>
             </li>
-            {% endfor %}
+            {% endif %} {% endfor %}
           </ul>
         </div>
         <div class="chat-message clearfix">
           <div class="input-group mb-0">
             <div class="input-group-prepend">
               <span class="input-group-text" id="sendButton"
-                ><i class="fa fa-send"></i
+                ><i class="fas fa-paper-plane"></i
               ></span>
             </div>
             <input
@@ -105,28 +125,42 @@
 <script>
   let socket = io();
   socket.on("connect", function () {
-    socket.emit("join", "New Connection");
+    socket.emit("user_connected");
+  });
+
+  window.addEventListener("beforeunload", function (event) {
+    socket.emit("user_disconnected", {
+      username: "session['username']",
+    });
   });
 
   $("#sendButton").on("click", function () {
     let msg = $("#inputMessage").val();
     socket.emit("message sent by user", {
-      username: "User",
-      message: msg,
+      from: "{{session['username']}}",
+      to: "{{users[request.path.split('/')[2]|int].username}}", // Retrieve username of user to which message was sent
+      content: msg,
     });
+    $("#messages").append(`
+        <li class="clearfix">
+          <div class="message-data text-right">
+            <span class="message-data-time">10:10 AM, Today</span>
+         </div>
+         <div class="message other-message float-right">${msg}</div>
+        </li>`);
     msg = "";
   });
 
-  socket.on("response", function ({ username, message }) {
-    $("#messages").append(`
-      <li class="clearfix">
-        <div class="message-data">
-          <span class="message-data-time">10:15 AM, Today</span>
-        </div>
-        <div class="message my-message">
-          ${message}
-        </div>
-      </li>`);
+  socket.on("message sent to user", function ({ from, content }) {
+    if (from === "{{users[request.path.split('/')[2]|int].username}}") {
+      $("#messages").append(`
+        <li class="clearfix">
+          <div class="message-data">
+            <span class="message-data-time">10:15 AM, Today</span>
+          </div>
+          <div class="message my-message">${content}</div>
+        </li>`);
+    }
   });
 </script>
 {% endblock %}

@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import Flask, render_template, request, make_response, redirect, url_for, session
+from flask_socketio import SocketIO, send
+from flask_mail import Mail, Message
 import datetime
 import socket
 import requests
@@ -33,9 +35,13 @@ templateData = {}
 
 activeSensor = False
 
+# Config SocketIO
+app.config['SECRET_KEY'] = 'key' # todo: Change secret key to something more secure
+socketio = SocketIO(app)
 
 rooms = [{'id': '1', 'name': 'Living room'}, {'id': '2', 'name': 'Kitchen'}]
 
+# ? Is this still necessary?
 #render with template and templateData
 @app.route('/')
 def hello():
@@ -64,7 +70,7 @@ def home(id):
         # print(str(simpleSQLquery("SELECT * FROM mod5.sessions")))
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and return home page
         if(result[0][0] == 1):
-            return render_template('views/home.html', activeRoomId=id, rooms=rooms, username='Username', selected=id)
+            return render_template('views/home.html', activeRoomId=id, rooms=rooms, selected=id)
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
             
             resp = make_response(redirect(url_for('login')))
@@ -80,19 +86,50 @@ def components():
 
 @app.route('/users')
 def users():
-    users = [{'id': '0', 'username': 'FirstUser', 'email': 'first@user.com'}, 
-    {'id': '1', 'username': 'SecondUser', 'email': 'second@user.com'}
-    ]
     return render_template('views/users.html', users=users)
 
-messages = [{'id': '0', 'username': 'User', 'message': 'Hello World'}]
+# Chat
+messages = [{'id': '0', 'username': 'User', 'content': 'Hello World'}]
+onlineUsers = {}
 
-@app.route('/chat', methods=['GET', 'POST'])
-def chat():
-    return render_template('views/chat.html', messages=messages)    
+@app.route('/chat/<int:id>', methods=['GET', 'POST'])
+def chat(id):
+    users = [{'id': '0', 'username': 'bob', 'email': 'bob@user.com'}, 
+    {'id': '1', 'username': 'bobby', 'email': 'bobby@user.com'},
+    {'id': '2', 'username': 'bobbo', 'email': 'bobbo@user.com'},
+    
+    ]
+    return render_template('views/chat.html', messages=messages, users=users)    
+
+# todo: When recipient is offline, message should be stored in database. When recipient online, recipient should receive message in real time
+@socketio.on('message sent by user')
+def handle_message(msg):
+    print(msg)
+    messages.append(msg)
+
+    if(msg['to'] in onlineUsers):
+        recipientSessionId = onlineUsers[msg['to']]
+        socketio.emit('message sent to user', msg, room=recipientSessionId)
+    return redirect(url_for('chat', id=msg['to']|int))
+    
+@socketio.on('user_connected')
+def handle_join():
+    # todo: Show online message
+    print('user connected:')
+    username = session["username"]
+    onlineUsers[username] = request.sid
+    print(onlineUsers)
+
+@socketio.on('user_disconnected')
+def handleDisconnect(user):
+    print('user disconnected')
+    del onlineUsers[user.username]
+    print(onlineUsers)
+
+# End of chat
 
 @app.route('/login', methods = ['POST', 'GET'])
-def login():
+def login(): # * Same account can currently be signed in with unlimited different sessions
     results = ""
     sessionID = request.cookies.get('sessionID')
     if request.method == "POST" and not sessionID:
@@ -104,7 +141,7 @@ def login():
 
         username = request.form['username']
         password = request.form['password']
-
+        session["username"] = username
         #then check database, if credentitials correct, then create session token
         print("username: %s     password: %s ", username, password )
         
@@ -129,8 +166,9 @@ def login():
                     query = f"INSERT INTO mod5.sessions (uid, sessionid) VALUES (\'{userID}\', \'{sessionToken}\')"
                     resultInsert = SQLqueryInsert(query)
                     if(resultInsert == "Succeeded!"): #means no Exceptions and everything went well
-                        resp = make_response(redirect(url_for('home', id=1)))
+                        resp = make_response(redirect(url_for('home', id=0)))
                         resp.set_cookie('sessionID', str(sessionToken))
+                        session["sessionId"] = sessionToken
                         #you are done and you can visit the home with an valid session token!
                         return resp
                     else: # there is an exception return it
@@ -163,6 +201,14 @@ def login():
         else: #the user doesnt have an sessionID, so go to login page
 
             return render_template('views/login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    # return redirect(url_for('login'))
+    resp = make_response(render_template('views/login.html'))
+    resp.set_cookie('sessionID', expires=0)
+    return resp
 
 # @app.route('/light', methods = ['POST'])
 def switchlight():
@@ -407,8 +453,7 @@ def simpleSQLquery(query):
 print(local_ip)
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=8080)
-
+    socketio.run(debug=True, host="0.0.0.0", port=8080)
 
 # with requests.session() as s:
 #     # fetch the login page
