@@ -138,7 +138,6 @@ def addComponent():
 @app.route('/components/edit/<int:id>', methods=['GET', 'POST'])
 def editComponent(id):
     if request.method == 'POST':
-        # print('Het is gelukt')
         name = request.form['name']
         room = request.form['room']
         query= f"UPDATE mod5.lights SET name = \'{name}\', roomid = \'{room}\' WHERE lightid={id};"
@@ -155,20 +154,6 @@ def deleteComponent(id):
     return redirect('/components')
 
 # Users CRUD
-@app.route('/users', methods=['POST', 'GET'])
-def users():
-    if request.method == 'POST': # If new user is added
-        email = request.form['email']
-        username = request.form['username']
-        password = request.form['password']
-        type = request.form['type']
-        query= f"INSERT INTO mod5.users (username, password, type, email) VALUES (\'{username}\', \'{password}\', \'{type}\', \'{email}\');"
-        SQLqueryInsert(query)
-        return redirect('/users')
-    else: # If users page is visited
-        userList = fetchAllUsers()
-        return render_template('views/users.html', users=userList)
-
 def fetchAllUsers():
     userList = []
     query = 'SELECT * FROM "mod5"."users";'
@@ -179,25 +164,47 @@ def fetchAllUsers():
         id = result[i][0]
         username = result[i][1]
         type = result[i][3]
-        userList.append({'id': id, 'username': username, 'type': type})
+        email = result[i][4]
+        userList.append({'id': id, 'username': username, 'email': email, 'type': type})
     userList.sort(key=operator.itemgetter('id'))
     return userList
 
-@app.route('/users/<int:id>')
-def fetchSingleUser (id):
-    query = f'SELECT * FROM "mod5"."users" WHERE id={id};'
-    simpleSQLquery(query)
-    return redirect('/')
+@app.route('/users')
+def users():
+    userList = fetchAllUsers()
+    return render_template('views/users.html', users=userList, showModal=-2)
+
+@app.route('/users/add', methods=['GET', 'POST'])
+def addUser():
+    if request.method == 'POST': # If new component is added
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['password']
+        type = request.form['type']
+        query= f"INSERT INTO mod5.users (username, password, type, email) VALUES (\'{username}\', \'{password}\', \'{type}\', \'{email}\');"
+        SQLqueryInsert(query)
+        return redirect('/users')
+    else: # If components page is visited
+        return render_template('views/users.html', users=fetchAllUsers(), showModal=-1)
+
+@app.route('/users/edit/<int:id>', methods=['GET', 'POST'])
+def editUser(id):
+    if request.method == 'POST':
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['password']
+        type = request.form['type']
+        query= f"UPDATE mod5.users SET email = \'{email}\', username = \'{username}\', password = \'{password}\', type = \'{type}\' WHERE uid={id};"
+        SQLqueryInsert(query)
+        return redirect('/users')
+    else:
+        return render_template('views/users.html', users=fetchAllUsers(), showModal=id)
 
 @app.route('/users/delete/<int:id>')
 def deleteUser(id):
     query = f"DELETE FROM mod5.users WHERE uid={id} RETURNING *;"
     SQLqueryInsert(query)
     return redirect('/users')
-
-@app.route('/users/update/<int:id>')
-def updateUser(id):
-    return redirect('/')
 
 # Chat CRUD
 messages = []

@@ -1,14 +1,12 @@
 <!-- prettier-ignore -->
-{% macro userTable(users)-%}
+{% macro userTable(users, showModal)-%}
 <table class="table">
   <thead>
     <th>Id</th>
     <th>Username</th>
     <th>Type</th>
     <th>
-      <button type="button" class="btn btn-primary" onclick="toggleModal(-1)">
-        Add
-      </button>
+      <a href="/users/add" class="btn btn-primary">Add</a>
     </th>
   </thead>
   <tbody>
@@ -18,10 +16,8 @@
       <td>{{user.username}}</td>
       <td>{{user.type}}</td>
       <td>
-        <button class="btn btn-primary" onclick="toggleModal({{user.id|int}})">
-          Edit
-        </button>
-        <a href="users/delete/{{user.id}}" class="btn btn-primary">Delete</a>
+        <a href="/users/edit/{{user.id|int}}" class="btn btn-primary">Edit</a>
+        <a href="/users/delete/{{user.id}}" class="btn btn-primary">Delete</a>
       </td>
     </tr>
     {% endfor %}
@@ -34,11 +30,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 id="title" class="modal-title">User</h5>
-        <button
-          type="button"
-          class="btn-close"
-          onclick="toggleModal(-2);"
-        ></button>
+        <a href="/users" class="btn-close"></a>
       </div>
       <div class="modal-body">
         <form method="post">
@@ -92,28 +84,34 @@
 </div>
 
 <script>
-  const modal = new bootstrap.Modal(document.getElementById("modal"));
+  const modal = new bootstrap.Modal(document.getElementById("modal"), {
+  backdrop: 'static',
+  keyboard: false});
 
-  async function toggleModal(id) {
-    let title = document.getElementById("title");
-    let username = document.getElementById("username");
-    let password = document.getElementById("password");
-    let type = document.getElementById("type");
+  const showModal = {{showModal|int}}
+  const users = {{users|tojson}}
 
-    if (id > -1) {
-      // Edit
+  let email = document.getElementById("email");
+  let username = document.getElementById("username");
+  let password = document.getElementById("password");
+  let type = document.getElementById("type");
+
+    if(showModal > -1){ // Edit existing user
       title.innerHTML = "Edit User";
-      let response = await fetch("");
-      let data = response.data;
-    } else if (id === -1) {
-      // Add
+      let user = users.find(usr => {return usr.id == showModal})
+      console.log(user)
+      email.value = user.email
+      username.value = user.username
+      password.value = user.password
+      type.value = user.type // ! Bug: database adds whitespace after each entry
+      modal.toggle()
+  }else if(showModal > -2){ // Add new component
       title.innerHTML = "Add User";
+      email.value = "";
       username.value = "";
-      password.innerHTML = "";
-      type.value = "user";
-    }
-
-    modal.toggle();
+      password.value = "";
+      type.value = "user"
+      modal.toggle()
   }
 </script>
 

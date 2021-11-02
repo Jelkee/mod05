@@ -1,9 +1,7 @@
 {% macro topbar() -%}
 <nav class="navbar navbar-expand topbar mb-4 static-top">
   <!-- Welcome text -->
-  <span class="navbar-brand mb-0 h1 text-dark"
-    >Welcome <b>{{session["username"]}}</b></span
-  >
+  <span id="welcomeMessageSpan" class="navbar-brand mb-0 h1 text-dark"></span>
   <!-- Topbar Navbar -->
   <!-- <ul class="navbar-nav ml-auto">
     <li class="nav-item dropdown no-arrow">
@@ -30,4 +28,21 @@
     </li>
   </ul> -->
 </nav>
+
+<script>
+  let day = new Date();
+  let hour = day.getHours();
+  let timePeriod;
+  if (hour < 12) {
+    timePeriod = "morning";
+  } else if (hour < 18) {
+    timePeriod = "afternoon";
+  } else {
+    timePeriod = "evening";
+  }
+
+  let welcomeMessageSpan = document.getElementById("welcomeMessageSpan");
+  let welcomeMessage = `Good ${timePeriod}, <b>{{session["username"]}}</b>`;
+  welcomeMessageSpan.innerHTML = welcomeMessage;
+</script>
 {%- endmacro %}
