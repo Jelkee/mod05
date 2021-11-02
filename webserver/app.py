@@ -99,19 +99,18 @@ def fetchAllRooms():
     return roomList
 
 # Components CRUD
-@app.route('/components', methods=['POST', 'GET'])
+@app.route('/components')
 def components():
-    if request.method == 'POST': # If new component is added
-        name = request.form['name']
-        room = request.form['room']
-        query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
-        SQLqueryInsert(query)
-        return redirect('/components')
-    else: # If components page is visited
-        componentList = fetchComponents()
-        return render_template('views/components.html', components=componentList, rooms=fetchAllRooms())
+    # if request.method == 'POST': # If new component is added
+    #     name = request.form['name']
+    #     room = request.form['room']
+    #     query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
+    #     SQLqueryInsert(query)
+    #     return redirect('/components')
+    # else: # If components page is visited
+    return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-2)
 
-def fetchComponents():
+def fetchAllComponents():
     componentList = []
     query = 'SELECT * FROM "mod5"."lights";'
     result = simpleSQLquery(query)
@@ -124,6 +123,30 @@ def fetchComponents():
         componentList.append({'id': id, 'name': name, 'gpio': '14', 'room': room})
     componentList.sort(key=operator.itemgetter('id'))
     return componentList
+
+@app.route('/components/add', methods=['GET', 'POST'])
+def addComponent():
+    if request.method == 'POST': # If new component is added
+        name = request.form['name']
+        room = request.form['room']
+        query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
+        SQLqueryInsert(query)
+        return redirect('/components')
+    else: # If components page is visited
+        return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-1)
+
+@app.route('/components/edit/<int:id>', methods=['GET', 'POST'])
+def editComponent(id):
+    if request.method == 'POST':
+        # print('Het is gelukt')
+        name = request.form['name']
+        room = request.form['room']
+        query= f"UPDATE mod5.lights SET name = \'{name}\', roomid = \'{room}\' WHERE lightid={id};"
+        SQLqueryInsert(query)
+        return redirect('/components')
+    else:
+        componentList = fetchAllComponents()
+        return render_template('views/components.html', components=componentList, rooms=fetchAllRooms(), showModal=id)
 
 @app.route('/components/delete/<int:id>')
 def deleteComponent(id):
@@ -174,7 +197,7 @@ def deleteUser(id):
 
 @app.route('/users/update/<int:id>')
 def updateUser(id):
-    return render_template('expression')
+    return redirect('/')
 
 # Chat CRUD
 messages = []

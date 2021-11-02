@@ -1,4 +1,4 @@
-{% macro componentTable(components, rooms) -%}
+{% macro componentTable(components, rooms, showModal) -%}
 <table class="table">
   <thead>
     <th>Id</th>
@@ -6,9 +6,9 @@
     <th>GPIO Pin</th>
     <th>Room</th>
     <th>
-      <button type="button" class="btn btn-primary" onclick="toggleModal(-1)">
+      <a href="/components/add" type="button" class="btn btn-primary">
         Add
-      </button>
+      </a>
     </th>
   </thead>
   <tbody>
@@ -32,8 +32,9 @@
         </select>
     </td>
       <td>
-        <a class="btn btn-primary">Edit</a>
-        <a href="components/delete/{{component.id}}" class="btn btn-primary" onclick="handleDelete({{component.id}})">Delete</a>
+        <!-- <button class="btn btn-primary" onclick="toggleModal({{component.id}})">Edit</button> -->
+        <a href="components/edit/{{component.id}}" class="btn btn-primary">Edit</a>
+        <a href="components/delete/{{component.id}}" class="btn btn-primary">Delete</a>
       </td>
     </tr>
     {% endfor %}
@@ -46,11 +47,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 id="title" class="modal-title">Components</h5>
-        <button
+        <a
+          href="/components"
           type="button"
           class="btn-close"
-          onclick="toggleModal(-2);"
-        ></button>
+        ></a>
       </div>
       <div class="modal-body">
         <form method="post">
@@ -91,30 +92,31 @@
 </div>
 
 <script>
-  const modal = new bootstrap.Modal(document.getElementById("modal"));
+  const modal = new bootstrap.Modal(document.getElementById("modal"), {
+  backdrop: 'static',
+  keyboard: false
+});
+  const showModal = {{showModal|int}}
+  let name = document.getElementById("name");
+  let room = document.getElementById("room");
+  let gpio = document.getElementById("gpio")
+  const components = {{components|tojson}}
 
-  async function toggleModal(id) {
-    let name = document.getElementById("name");
-    let room = document.getElementById("room");
+  if(showModal > -1){ // Edit existing component
+    title.innerHTML = "Edit Component";
+    let component = components.find(cmp => {return cmp.id == showModal})
+    name.value = component.name
+    gpio.value = component.gpio
+    room.value = component.room
+    modal.toggle()
+  }else if(showModal > -2){ // Add new component
+    title.innerHTML = "Add Component";
+    name.value = "";
+    gpio.value = "0";
+    room.value = "1";
+    modal.toggle()
+  }else{ // Don't show modal
 
-    if (id > -1) {
-      // Edit component
-      title.innerHTML = "Edit Component";
-      let response = await fetch("");
-      let data = response.data;
-    } else if (id === -1) {
-      // Add component
-      title.innerHTML = "Add Component";
-      name.value = "";
-      gpio.value = "0";
-      room.value = "1";
-    }
-
-    modal.toggle();
-  }
-
-  function handleDelete(id){
-    
   }
 </script>
 
