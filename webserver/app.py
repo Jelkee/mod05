@@ -8,6 +8,7 @@ import psycopg2
 from random import randint
 import time
 import multiprocessing
+import operator
 
 # Commented out because I keep getting errors when installing
 # import RPi.GPIO as GPIO
@@ -57,6 +58,10 @@ def hello():
     resp.set_cookie('sessionID', expires=0)
     return resp
 
+@app.route('/home')
+def redirect_to_home():
+    return redirect('/home/0')
+
 @app.route('/home/<int:id>', methods = ['GET'])
 def home(id):
      #get the sessionID and check there even an sessionID
@@ -88,8 +93,10 @@ def fetchRooms():
         name = result[i][1]
         description = result[i][2]
         roomList.append({'id': id, 'name': name, 'description': description})
+    roomList.sort(key=operator.itemgetter('id'))
     return roomList
 
+# Components CRUD
 @app.route('/components', methods=['POST', 'GET'])
 def components():
     if request.method == 'POST': # If new component is added
@@ -101,7 +108,14 @@ def components():
     else: # If components page is visited
         componentList = fetchComponents()
         return render_template('views/components.html', components=componentList, rooms=fetchRooms())
-    
+
+@app.route('/components/delete/<int:id>')
+def deleteComponent(id):
+    query = f"DELETE FROM mod5.lights WHERE lightid={id};"
+    result = simpleSQLquery(query)
+    return redirect('/components')
+
+
 def fetchComponents():
     componentList = []
     query = 'SELECT * FROM "mod5"."lights";'
@@ -113,8 +127,10 @@ def fetchComponents():
         name = result[i][1]
         room = result[i][3]
         componentList.append({'id': id, 'name': name, 'gpio': '14', 'room': room})
+    componentList.sort(key=operator.itemgetter('id'))
     return componentList
 
+# Users CRUD
 @app.route('/users', methods=['POST', 'GET'])
 def users():
     if request.method == 'POST': # If new user is added
@@ -140,14 +156,14 @@ def fetchUsers():
         username = result[i][1]
         type = result[i][3]
         userList.append({'id': id, 'username': username, 'type': type})
+    userList.sort(key=operator.itemgetter('id'))
     return userList
-
 
 @app.route('/users/<int:id>')
 def getUser (id):
     return redirect('/')
 
-# Chat
+# Chat CRUD
 messages = []
 onlineUsers = {}
 

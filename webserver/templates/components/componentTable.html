@@ -32,8 +32,8 @@
         </select>
     </td>
       <td>
-        <button class="btn btn-primary">Edit</button>
-        <button class="btn btn-primary">Delete</button>
+        <a class="btn btn-primary">Edit</a>
+        <a href="components/delete/{{component.id}}" class="btn btn-primary" onclick="handleDelete({{component.id}})">Delete</a>
       </td>
     </tr>
     {% endfor %}
@@ -111,6 +111,10 @@
     }
 
     modal.toggle();
+  }
+
+  function handleDelete(id){
+    
   }
 </script>
 
