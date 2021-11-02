@@ -39,8 +39,6 @@ activeSensor = False
 app.config['SECRET_KEY'] = 'key' # todo: Change secret key to something more secure
 socketio = SocketIO(app)
 
-rooms = [{'id': '1', 'name': 'Living room'}, {'id': '2', 'name': 'Kitchen'}]
-
 # ? Is this still necessary?
 #render with template and templateData
 @app.route('/')
@@ -70,7 +68,7 @@ def home(id):
         # print(str(simpleSQLquery("SELECT * FROM mod5.sessions")))
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and return home page
         if(result[0][0] == 1):
-            return render_template('views/home.html', activeRoomId=id, rooms=rooms, selected=id)
+            return render_template('views/home.html', activeRoomId=id, rooms=fetchRooms(), selected=id)
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
             
             resp = make_response(redirect(url_for('login')))
@@ -79,10 +77,57 @@ def home(id):
     else: #the user doesnt have an sessionID, so go to login page
         return redirect(url_for('login'))
 
-@app.route('/components')
+def fetchRooms():
+    roomList = []
+    query = 'SELECT * FROM "mod5"."rooms";'
+    result = simpleSQLquery(query)
+
+    # Convert tuple to dict
+    for i in range(len(result)):
+        id = result[i][0]
+        name = result[i][1]
+        description = result[i][2]
+        roomList.append({'id': id, 'name': name, 'description': description})
+    return roomList
+
+@app.route('/components', methods=['POST', 'GET'])
 def components():
-    components = [{'id': '0', 'name': 'Light in living room', 'gpio': '14', 'room': '1'}]
-    return render_template('views/components.html', components=components, rooms=rooms)
+    if request.method == 'POST': # If new component is added
+        name = request.form['name']
+        room = request.form['room']
+        query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
+        SQLqueryInsert(query)
+        return redirect('/components')
+    else: # If components page is visited
+        componentList = fetchComponents()
+        return render_template('views/components.html', components=componentList, rooms=fetchRooms())
+    
+def fetchComponents():
+    componentList = []
+    query = 'SELECT * FROM "mod5"."lights";'
+    result = simpleSQLquery(query)
+
+    # Convert tuple to dict
+    for i in range(len(result)):
+        id = result[i][0]
+        name = result[i][1]
+        room = result[i][3]
+        componentList.append({'id': id, 'name': name, 'gpio': '14', 'room': room})
+    return componentList
+
+@app.route('/users', methods=['POST', 'GET'])
+def users():
+    if request.method == 'POST': # If new user is added
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['password']
+        type = request.form['type']
+        query= f"INSERT INTO mod5.users (username, password, type, email) VALUES (\'{username}\', \'{password}\', \'{type}\', \'{email}\');"
+        SQLqueryInsert(query)
+        return redirect('/users')
+    else: # If users page is visited
+        userList = fetchUsers()
+        return render_template('views/users.html', users=userList)
 
 def fetchUsers():
     userList = []
@@ -96,11 +141,11 @@ def fetchUsers():
         type = result[i][3]
         userList.append({'id': id, 'username': username, 'type': type})
     return userList
-    
-@app.route('/users')
-def users():
-    userList = fetchUsers()
-    return render_template('views/users.html', users=userList)
+
+
+@app.route('/users/<int:id>')
+def getUser (id):
+    return redirect('/')
 
 # Chat
 messages = []

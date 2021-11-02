@@ -17,7 +17,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form>
+        <!-- <form>
           <div class="mb-3">
             <label class="form-label">Username</label>
             <input
@@ -48,6 +48,38 @@
           <div class="modal-footer d-flex justify-content-center">
             <button type="submit" class="btn btn-primary">Submit</button>
           </div>
+        </form> -->
+        <form action="POST">
+          <label class="form-label">Email</label>
+          <input
+            type="text"
+            class="form-control"
+            id="email"
+            name="email"
+            placeholder="Email"
+          />
+          <label class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            placeholder="Username"
+          />
+          <label class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Password"
+          />
+          <!-- <label class="form-label">Type</label>
+          <select id="type" class="form-select">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select> -->
+          <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
     </div>

@@ -5,7 +5,11 @@
     <th>Name</th>
     <th>GPIO Pin</th>
     <th>Room</th>
-    <th></th>
+    <th>
+      <button type="button" class="btn btn-primary" onclick="toggleModal(-1)">
+        Add
+      </button>
+    </th>
   </thead>
   <tbody>
     {% for component in components %}
@@ -35,4 +39,79 @@
     {% endfor %}
   </tbody>
 </table>
+
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="title" class="modal-title">Components</h5>
+        <button
+          type="button"
+          class="btn-close"
+          onclick="toggleModal(-2);"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              value=""
+              placeholder="Name"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">GPIO</label>
+            <select id="gpio" name="gpio" class="form-select">
+              {% for i in range(17) %}
+              <option value="{{i}}">{{i}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Room</label>
+            <select id="room" name="room" class="form-select">
+              {% for room in rooms %}
+              <option value="{{room.id}}">{{room.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="modal-footer d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = new bootstrap.Modal(document.getElementById("modal"));
+
+  async function toggleModal(id) {
+    let name = document.getElementById("name");
+    let room = document.getElementById("room");
+
+    if (id > -1) {
+      // Edit component
+      title.innerHTML = "Edit Component";
+      let response = await fetch("");
+      let data = response.data;
+    } else if (id === -1) {
+      // Add component
+      title.innerHTML = "Add Component";
+      name.value = "";
+      gpio.value = "0";
+      room.value = "1";
+    }
+
+    modal.toggle();
+  }
+</script>
+
 {%- endmacro %}
