@@ -1,47 +1,53 @@
-{% macro smartComponents() -%}
-<div class="card" style="width: 12rem; margin: 15px">
-  <div
-    class="card-header container-fluid"
-    style="background: white; border-style: none"
-  >
-    <div class="row">
-      <div class="col-md-10">
-        <i class="fas fa-lightbulb text-primary" style="font-size: 35px"></i>
-      </div>
-      <div class="col-md-2 float-right">
-        <div class="form-check form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="flexSwitchLights"
-            name="lights"
-            onchange="Postmanual(this)"
-          />
+{% macro smartComponents(components) -%}
+
+<!-- Card -->
+{% for component in components %}
+<div class="col-sm-6 col-md-4 col-lg-3 col-xl-2 pb-4">
+  <div class="card card-default" style="width: 12rem; margin: 15px">
+    <div
+      class="card-header container-fluid"
+      style="background: white; border-style: none"
+    >
+      <div class="row">
+        <div class="col-md-10">
+          <i class="fas fa-lightbulb text-primary" style="font-size: 35px"></i>
+        </div>
+        <div class="col-md-2 float-right">
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="flexSwitchLights"
+              name="lights"
+              onchange="Postmanual(this)"
+            />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="card-body">
-    <h5 class="card-title">Light in living room</h5>
-    <h6 class="card-subtitle mb-2 text-muted">Light</h6>
-  </div>
-  <div class="card-footer" style="background-color: white">
-    <div class="row">
-      <div class="col-md-10">Auto</div>
-      <div class="col-md-2 float-right">
-        <div class="form-check form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="flexSwitchAutomatic"
-            name="automatic"
-            onchange="PostAutomatic(this)"
-          />
+    <div class="card-body">
+      <h5 class="card-title">Light in living room</h5>
+      <h6 class="card-subtitle mb-2 text-muted">Light</h6>
+    </div>
+    <div class="card-footer" style="background-color: white">
+      <div class="row">
+        <div class="col-md-10">Auto</div>
+        <div class="col-md-2 float-right">
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="flexSwitchAutomatic"
+              name="automatic"
+              onchange="PostAutomatic(this)"
+            />
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+{% endfor %}
 
 <script>
   function Postmanual(checkboxElem) {

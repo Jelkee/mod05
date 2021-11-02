@@ -74,7 +74,7 @@ def home(id):
         # print(str(simpleSQLquery("SELECT * FROM mod5.sessions")))
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and return home page
         if(result[0][0] == 1):
-            return render_template('views/home.html', activeRoomId=id, rooms=fetchAllRooms(), selected=id)
+            return render_template('views/home.html', activeRoomId=id, rooms=fetchAllRooms(), selected=id, components=fetchAllComponents())
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
             
             resp = make_response(redirect(url_for('login')))
