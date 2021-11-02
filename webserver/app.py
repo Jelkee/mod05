@@ -58,6 +58,7 @@ def hello():
     resp.set_cookie('sessionID', expires=0)
     return resp
 
+# Redirect to home
 @app.route('/home')
 def redirect_to_home():
     return redirect('/home/0')
@@ -73,7 +74,7 @@ def home(id):
         # print(str(simpleSQLquery("SELECT * FROM mod5.sessions")))
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and return home page
         if(result[0][0] == 1):
-            return render_template('views/home.html', activeRoomId=id, rooms=fetchRooms(), selected=id)
+            return render_template('views/home.html', activeRoomId=id, rooms=fetchAllRooms(), selected=id)
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
             
             resp = make_response(redirect(url_for('login')))
@@ -82,7 +83,8 @@ def home(id):
     else: #the user doesnt have an sessionID, so go to login page
         return redirect(url_for('login'))
 
-def fetchRooms():
+# Rooms CRUD
+def fetchAllRooms():
     roomList = []
     query = 'SELECT * FROM "mod5"."rooms";'
     result = simpleSQLquery(query)
@@ -107,14 +109,7 @@ def components():
         return redirect('/components')
     else: # If components page is visited
         componentList = fetchComponents()
-        return render_template('views/components.html', components=componentList, rooms=fetchRooms())
-
-@app.route('/components/delete/<int:id>')
-def deleteComponent(id):
-    query = f"DELETE FROM mod5.lights WHERE lightid={id};"
-    result = simpleSQLquery(query)
-    return redirect('/components')
-
+        return render_template('views/components.html', components=componentList, rooms=fetchAllRooms())
 
 def fetchComponents():
     componentList = []
@@ -130,6 +125,12 @@ def fetchComponents():
     componentList.sort(key=operator.itemgetter('id'))
     return componentList
 
+@app.route('/components/delete/<int:id>')
+def deleteComponent(id):
+    query = f"DELETE FROM mod5.lights WHERE lightid={id} RETURNING *;"
+    SQLqueryInsert(query)
+    return redirect('/components')
+
 # Users CRUD
 @app.route('/users', methods=['POST', 'GET'])
 def users():
@@ -142,10 +143,10 @@ def users():
         SQLqueryInsert(query)
         return redirect('/users')
     else: # If users page is visited
-        userList = fetchUsers()
+        userList = fetchAllUsers()
         return render_template('views/users.html', users=userList)
 
-def fetchUsers():
+def fetchAllUsers():
     userList = []
     query = 'SELECT * FROM "mod5"."users";'
     result = simpleSQLquery(query)
@@ -160,8 +161,20 @@ def fetchUsers():
     return userList
 
 @app.route('/users/<int:id>')
-def getUser (id):
+def fetchSingleUser (id):
+    query = f'SELECT * FROM "mod5"."users" WHERE id={id};'
+    simpleSQLquery(query)
     return redirect('/')
+
+@app.route('/users/delete/<int:id>')
+def deleteUser(id):
+    query = f"DELETE FROM mod5.users WHERE uid={id} RETURNING *;"
+    SQLqueryInsert(query)
+    return redirect('/users')
+
+@app.route('/users/update/<int:id>')
+def updateUser(id):
+    return render_template('expression')
 
 # Chat CRUD
 messages = []
@@ -169,7 +182,7 @@ onlineUsers = {}
 
 @app.route('/chat/<int:id>', methods=['GET', 'POST'])
 def chat(id):
-    userList = fetchUsers()
+    userList = fetchAllUsers()
     return render_template('views/chat.html', messages=messages, users=userList)    
 
 # todo: When recipient is offline, message should be stored in database. When recipient online, recipient should receive message in real time
