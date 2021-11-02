@@ -16,6 +16,7 @@
   crossorigin="anonymous"
   referrerpolicy="no-referrer"
 ></script>
+<title>Raspberry Home - Chat</title>
 {% endblock %}
 
 <!-- prettier-ignore -->
@@ -138,7 +139,7 @@
     let msg = $("#inputMessage").val();
     socket.emit("message sent by user", {
       from: "{{session['username']}}",
-      to: "{{users[request.path.split('/')[2]|int].username}}", // Retrieve username of user to which message was sent
+      to: "{{users[request.path.split('/')[2]|int - 1].username}}", // Retrieve username of user to which message was sent
       content: msg,
     });
     $("#messages").append(`

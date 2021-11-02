@@ -1,44 +1,19 @@
-<!-- prettier-ignore -->
-{% from 'components/addUser.html' import addUser %} 
-{% macro userTable(users)-%}
-<table class="table">
-  <thead>
-    <th>Id</th>
-    <th>Username</th>
-    <th>Type</th>
-    <th>
-      <button type="button" class="btn btn-primary" onclick="toggleModal(-1)">
-        Add
-      </button>
-    </th>
-  </thead>
-  <tbody>
-    {% for user in users %}
-    <tr>
-      <td>{{user.id}}</td>
-      <td>{{user.username}}</td>
-      <td>{{user.type}}</td>
-      <td>
-        <button class="btn btn-primary" onclick="toggleModal({{user.id|int}})">
-          Edit
-        </button>
-        <button class="btn btn-primary">Delete</button>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% macro addUser() -%}
+<!-- Click on Modal Button -->
+<button type="button" class="btn btn-primary" onclick="toggleModal(-1)">
+  Add
+</button>
 
-<!-- userModal -->
-<div class="modal fade" id="userModal" tabindex="-1">
+<!-- Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 id="title" class="modal-title">User</h5>
+        <h5 id="title" class="modal-title">Add User</h5>
         <button
           type="button"
           class="btn-close"
-          onclick="toggleModal(-2);"
+          onclick="toggleModal(-1);"
         ></button>
       </div>
       <div class="modal-body">
@@ -50,7 +25,6 @@
               class="form-control"
               id="username"
               name="username"
-              value=""
               placeholder="Username"
             />
           </div>
@@ -61,7 +35,6 @@
               class="form-control"
               id="password"
               name="password"
-              value=""
               placeholder="Password"
             />
           </div>
@@ -82,29 +55,26 @@
 </div>
 
 <script>
-  const userModal = new bootstrap.Modal(document.getElementById("userModal"));
+  const addUserModal = new bootstrap.Modal(
+    document.getElementById("addUserModal")
+  );
 
-  async function toggleModal(id) {
+  function toggleModal(id) {
     let title = document.getElementById("title");
     let username = document.getElementById("username");
     let password = document.getElementById("password");
     let type = document.getElementById("type");
 
     if (id > -1) {
-      // Edit
-      title.innerHTML = "Edit User";
-      let response = await fetch("");
-      let data = response.data;
-    } else if (id === -1) {
-      // Add
-      title.innerHTML = "Add User";
+      //Edit existing user
+    } else {
+      // Add new user
+      title.value = "Add User";
       username.value = "";
-      password.innerHTML = "";
+      password.value = "";
       type.value = "user";
+      addUserModal.toggle();
     }
-
-    userModal.toggle();
   }
 </script>
-
 {%- endmacro %}

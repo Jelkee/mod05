@@ -84,22 +84,32 @@ def components():
     components = [{'id': '0', 'name': 'Light in living room', 'gpio': '14', 'room': '1'}]
     return render_template('views/components.html', components=components, rooms=rooms)
 
+def fetchUsers():
+    userList = []
+    query = 'SELECT * FROM "mod5"."users";'
+    result = simpleSQLquery(query)
+
+    # Convert tuple to dict
+    for i in range(len(result)):
+        id = result[i][0]
+        username = result[i][1]
+        type = result[i][3]
+        userList.append({'id': id, 'username': username, 'type': type})
+    return userList
+    
 @app.route('/users')
 def users():
-    return render_template('views/users.html', users=users)
+    userList = fetchUsers()
+    return render_template('views/users.html', users=userList)
 
 # Chat
-messages = [{'id': '0', 'username': 'User', 'content': 'Hello World'}]
+messages = []
 onlineUsers = {}
 
 @app.route('/chat/<int:id>', methods=['GET', 'POST'])
 def chat(id):
-    users = [{'id': '0', 'username': 'bob', 'email': 'bob@user.com'}, 
-    {'id': '1', 'username': 'bobby', 'email': 'bobby@user.com'},
-    {'id': '2', 'username': 'bobbo', 'email': 'bobbo@user.com'},
-    
-    ]
-    return render_template('views/chat.html', messages=messages, users=users)    
+    userList = fetchUsers()
+    return render_template('views/chat.html', messages=messages, users=userList)    
 
 # todo: When recipient is offline, message should be stored in database. When recipient online, recipient should receive message in real time
 @socketio.on('message sent by user')
@@ -110,7 +120,7 @@ def handle_message(msg):
     if(msg['to'] in onlineUsers):
         recipientSessionId = onlineUsers[msg['to']]
         socketio.emit('message sent to user', msg, room=recipientSessionId)
-    return redirect(url_for('chat', id=msg['to']|int))
+    # return redirect(url_for('chat', id=msg['to']))
     
 @socketio.on('user_connected')
 def handle_join():
@@ -127,6 +137,10 @@ def handleDisconnect(user):
     print(onlineUsers)
 
 # End of chat
+
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
 @app.route('/login', methods = ['POST', 'GET'])
 def login(): # * Same account can currently be signed in with unlimited different sessions
