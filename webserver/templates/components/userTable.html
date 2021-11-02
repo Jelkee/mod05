@@ -21,7 +21,7 @@
         <button class="btn btn-primary" onclick="toggleModal({{user.id|int}})">
           Edit
         </button>
-        <button class="btn btn-primary">Delete</button>
+        <a href="users/delete/{{user.id}}" class="btn btn-primary">Delete</a>
       </td>
     </tr>
     {% endfor %}
@@ -93,6 +93,7 @@
 
 <script>
   const modal = new bootstrap.Modal(document.getElementById("modal"));
+  if({{}})
 
   async function toggleModal(id) {
     let title = document.getElementById("title");
