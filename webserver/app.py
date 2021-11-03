@@ -42,26 +42,44 @@ socketio = SocketIO(app)
 
 # ? Is this still necessary?
 #render with template and templateData
-@app.route('/')
-def hello():
-    now = datetime.datetime.now()
-    timeString = now.strftime("%Y-%m-%d %H:%M")
-    templateData = {
-      'title' : 'HELLO!',
-      'time': timeString
-      }
-    print("reset cookies")
-    requests.session().cookies.clear()
-    resp = make_response(render_template('main.html', **templateData))
+# @app.route('/')
+# def hello():
+#     now = datetime.datetime.now()
+#     timeString = now.strftime("%Y-%m-%d %H:%M")
+#     templateData = {
+#       'title' : 'HELLO!',
+#       'time': timeString
+#       }
+#     print("reset cookies")
+#     requests.session().cookies.clear()
+#     resp = make_response(render_template('main.html', **templateData))
 
-    print(request.cookies)
-    resp.set_cookie('sessionID', expires=0)
-    return resp
+#     print(request.cookies)
+#     resp.set_cookie('sessionID', expires=0)
+#     return resp
+
+def hasValidSessionId():
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        return True
+    else:
+        return False
+
+@app.route('/')
+def redirectToHome():
+    if hasValidSessionId():
+        return redirect('/home/0')
+    else:
+        return redirect(url_for('login'))
 
 # Redirect to home
 @app.route('/home')
 def redirect_to_home():
-    return redirect('/home/0')
+    if hasValidSessionId():
+        return redirect('/home/0')
+    else:
+        return redirect(url_for('login'))
+
 
 @app.route('/home/<int:id>', methods = ['GET'])
 def home(id):
@@ -101,14 +119,10 @@ def fetchAllRooms():
 # Components CRUD
 @app.route('/components')
 def components():
-    # if request.method == 'POST': # If new component is added
-    #     name = request.form['name']
-    #     room = request.form['room']
-    #     query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
-    #     SQLqueryInsert(query)
-    #     return redirect('/components')
-    # else: # If components page is visited
-    return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-2)
+    if hasValidSessionId():
+        return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-2)
+    else:
+        return redirect(url_for('login'))
 
 def fetchAllComponents():
     componentList = []
@@ -126,32 +140,41 @@ def fetchAllComponents():
 
 @app.route('/components/add', methods=['GET', 'POST'])
 def addComponent():
-    if request.method == 'POST': # If new component is added
-        name = request.form['name']
-        room = request.form['room']
-        query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
-        SQLqueryInsert(query)
-        return redirect('/components')
-    else: # If components page is visited
-        return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-1)
+    if hasValidSessionId():
+        if request.method == 'POST': # If new component is added
+            name = request.form['name']
+            room = request.form['room']
+            query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
+            SQLqueryInsert(query)
+            return redirect('/components')
+        else: # If components page is visited
+            return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-1)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/components/edit/<int:id>', methods=['GET', 'POST'])
 def editComponent(id):
-    if request.method == 'POST':
-        name = request.form['name']
-        room = request.form['room']
-        query= f"UPDATE mod5.lights SET name = \'{name}\', roomid = \'{room}\' WHERE lightid={id};"
-        SQLqueryInsert(query)
-        return redirect('/components')
+    if hasValidSessionId():
+        if request.method == 'POST':
+            name = request.form['name']
+            room = request.form['room']
+            query= f"UPDATE mod5.lights SET name = \'{name}\', roomid = \'{room}\' WHERE lightid={id};"
+            SQLqueryInsert(query)
+            return redirect('/components')
+        else:
+            componentList = fetchAllComponents()
+            return render_template('views/components.html', components=componentList, rooms=fetchAllRooms(), showModal=id)
     else:
-        componentList = fetchAllComponents()
-        return render_template('views/components.html', components=componentList, rooms=fetchAllRooms(), showModal=id)
+        return redirect(url_for('login'))
 
 @app.route('/components/delete/<int:id>')
 def deleteComponent(id):
-    query = f"DELETE FROM mod5.lights WHERE lightid={id} RETURNING *;"
-    SQLqueryInsert(query)
-    return redirect('/components')
+    if hasValidSessionId():
+        query = f"DELETE FROM mod5.lights WHERE lightid={id} RETURNING *;"
+        SQLqueryInsert(query)
+        return redirect('/components')
+    else:
+        return redirect(url_for('login'))
 
 # Users CRUD
 def fetchAllUsers():
@@ -171,40 +194,52 @@ def fetchAllUsers():
 
 @app.route('/users')
 def users():
-    userList = fetchAllUsers()
-    return render_template('views/users.html', users=userList, showModal=-2)
+    if hasValidSessionId():
+        userList = fetchAllUsers()
+        return render_template('views/users.html', users=userList, showModal=-2)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/users/add', methods=['GET', 'POST'])
 def addUser():
-    if request.method == 'POST': # If new component is added
-        email = request.form['email']
-        username = request.form['username']
-        password = request.form['password']
-        type = request.form['type']
-        query= f"INSERT INTO mod5.users (username, password, type, email) VALUES (\'{username}\', \'{password}\', \'{type}\', \'{email}\');"
-        SQLqueryInsert(query)
-        return redirect('/users')
-    else: # If components page is visited
-        return render_template('views/users.html', users=fetchAllUsers(), showModal=-1)
+    if hasValidSessionId():
+        if request.method == 'POST': # If new component is added
+            email = request.form['email']
+            username = request.form['username']
+            password = request.form['password']
+            type = request.form['type']
+            query= f"INSERT INTO mod5.users (username, password, type, email) VALUES (\'{username}\', \'{password}\', \'{type}\', \'{email}\');"
+            SQLqueryInsert(query)
+            return redirect('/users')
+        else: # If components page is visited
+            return render_template('views/users.html', users=fetchAllUsers(), showModal=-1)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/users/edit/<int:id>', methods=['GET', 'POST'])
 def editUser(id):
-    if request.method == 'POST':
-        email = request.form['email']
-        username = request.form['username']
-        password = request.form['password']
-        type = request.form['type']
-        query= f"UPDATE mod5.users SET email = \'{email}\', username = \'{username}\', password = \'{password}\', type = \'{type}\' WHERE uid={id};"
-        SQLqueryInsert(query)
-        return redirect('/users')
+    if hasValidSessionId():
+        if request.method == 'POST':
+            email = request.form['email']
+            username = request.form['username']
+            password = request.form['password']
+            type = request.form['type']
+            query= f"UPDATE mod5.users SET email = \'{email}\', username = \'{username}\', password = \'{password}\', type = \'{type}\' WHERE uid={id};"
+            SQLqueryInsert(query)
+            return redirect('/users')
+        else:
+            return render_template('views/users.html', users=fetchAllUsers(), showModal=id)
     else:
-        return render_template('views/users.html', users=fetchAllUsers(), showModal=id)
+        return redirect(url_for('login'))
 
 @app.route('/users/delete/<int:id>')
 def deleteUser(id):
-    query = f"DELETE FROM mod5.users WHERE uid={id} RETURNING *;"
-    SQLqueryInsert(query)
-    return redirect('/users')
+    if hasValidSessionId():
+        query = f"DELETE FROM mod5.users WHERE uid={id} RETURNING *;"
+        SQLqueryInsert(query)
+        return redirect('/users')
+    else:
+        return redirect(url_for('login'))
 
 # Chat CRUD
 messages = []
@@ -323,7 +358,6 @@ def login(): # * Same account can currently be signed in with unlimited differen
 @app.route('/logout')
 def logout():
     session.clear()
-    # return redirect(url_for('login'))
     resp = make_response(render_template('views/login.html'))
     resp.set_cookie('sessionID', expires=0)
     return resp
