@@ -11,9 +11,14 @@ import multiprocessing
 import operator
 
 # Commented out because I keep getting errors when installing
-# import RPi.GPIO as GPIO
-# import lightsensor
+import RPi.GPIO as GPIO
+import lightsensor
+import string
+import random
 
+
+from datetime import datetime, timedelta
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
 
 automaticProcess = "null"
@@ -40,43 +45,210 @@ activeSensor = False
 app.config['SECRET_KEY'] = 'key' # todo: Change secret key to something more secure
 socketio = SocketIO(app)
 
-# ? Is this still necessary?
-#render with template and templateData
-# @app.route('/')
-# def hello():
-#     now = datetime.datetime.now()
-#     timeString = now.strftime("%Y-%m-%d %H:%M")
-#     templateData = {
-#       'title' : 'HELLO!',
-#       'time': timeString
-#       }
-#     print("reset cookies")
-#     requests.session().cookies.clear()
-#     resp = make_response(render_template('main.html', **templateData))
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": 'group312021@gmail.com',
+    "MAIL_PASSWORD": 'JouwMoeder2021'
+}
 
-#     print(request.cookies)
-#     resp.set_cookie('sessionID', expires=0)
-#     return resp
+app.config.update(mail_settings)
+mail = Mail(app)
+s = URLSafeTimedSerializer('thisisasecret')
+broadcastMessage = False
+randomSaltBroadcast = None
+allemails = []
+usersNotHome = []
 
-def hasValidSessionId():
+
+#-------------------MAILING---------
+
+
+
+# Send email to everyone that is a user in database
+@app.route('/mail')
+def mailHello():
+    #you can only do this when you are admin:
     sessionID = request.cookies.get('sessionID')
+
     if sessionID:
-        return True
+        # query = f"SELECT COUNT(*),lastactive FROM mod5.sessions WHERE sessionid=\'{sessionID}\' GROUP BY lastactive"
+        # result = simpleSQLquery(query)
+
+        # print(str(simpleSQLquery("SELECT * FROM mod5.sessions")))
+        # if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and return home page
+        if hasValidSessionId(sessionID):
+            return broadcastAll()
+        else:  # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+            return resetSessionID(sessionID)
+    else:  # the user doesnt have an sessionID, so go to login page
+        return redirect(url_for('login'))
+
+
+      
+def broadcastAll():
+    # encrypts a token form the email
+        #randomize salt:
+    global randomSaltBroadcast
+    randomSaltBroadcast = randomSalt(20)
+    print(randomSaltBroadcast)
+    global broadcastMessage
+    broadcastMessage = True
+    #Get all Users Emails to send them a broadcast
+    query = " SELECT email FROM mod5.users"
+    result = simpleSQLquery(query)
+    global allemails
+    allemails = []
+    for resultrow in result:
+        allemails.append(resultrow[0])
+    print(str(allemails))
+    returnmsg = ""
+
+    for email in allemails:
+        token = s.dumps(email, salt=randomSaltBroadcast)
+        linkAtHome = url_for('confirm_mail', token=token, AtHome="True", _external=True)
+        linkNotHome = url_for('confirm_mail', token=token, AtHome="False", _external=True)
+        msg = Message(subject="Confirm",
+                        sender=app.config.get("MAIL_USERNAME"),
+                        recipients=[email],
+                        body="Send Email using Your Flask App\n"
+                            + "Are you at home? Then click on this Link {} \n".format(linkAtHome)
+                            + "Are you not at Home? Then click on this link {} \n".format(linkNotHome))
+        mail.send(msg)
+        returnmsg+="<h1>mail has been sent to this email address: {} And with the token: {}</h1>".format(email, token)
+    return returnmsg
+
+
+def randomSalt(size=6, chars=string.ascii_letters + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+@app.route('/confirm_mail/<token>/<AtHome>', methods=['GET'])
+def confirm_mail(token, AtHome):
+    # decrypts the token from email
+    # and get the info for home or not
+    
+    global broadcastMessage
+    print("Broadcast is:"+str(broadcastMessage))
+    if broadcastMessage:
+        try:
+            # first check if the token is still valid with max_age.
+            print("check email")
+            global randomSaltBroadcast
+            email = s.loads(token, salt=randomSaltBroadcast, max_age=120)  # in seconds
+            # then check if valid email and if its not registered yet if user is home or not
+            validemail = allemails.count(email)
+            alreadyregistered = usersNotHome.count(email)
+            print("check validation for emails: {} + count: {} and usersNotHome: {} + count: {}".format(str(allemails), str(validemail) ,str(usersNotHome), str(alreadyregistered)))
+            if validemail == 1 and alreadyregistered == 0:  # means a user with this email exists and not yet registered
+                print(AtHome)
+                if AtHome == "False":  # means user is not home
+                    usersNotHome.append(email)
+                    print("append mail in usersNotHome: {}".format(str(usersNotHome)))
+                    # when the everyone is not at home, then you can turn all the lights off:
+                    if len(usersNotHome) == len(allemails):  # means everyone has replied
+                        print("Everyone has replied")
+                        broadcastMessage = False
+                        # turn automatic sensor and lights off
+                        global enableLoopSensor
+                        enableLoopSensor = False
+                        for process in processList:
+                            process.terminate()
+                        #TODO: now turn off all the LIGHTS!
+                        # turn_off_lights()
+                        return ("you have succesfully registered with email: {} such that you are Not at Home!\n".format(email) +
+                           "everyone has replied that they are not at home, therefore all lights will be turned off")
+                               
+                    else: #not everyone has not yer replied to broadcast
+                        print(usersNotHome)
+                        return "you have succesfully registered with email: {} such that you are Not at Home!".format(email)
+
+                elif AtHome == "True":  # someone is atHome, therefore don't turn any light off and disable broadcast
+                    broadcastMessage = False
+                    randomSaltBroadcast=None
+                    return "you have succesfully registered with email: {} such that you are at Home! \nTherefore no lights will be turned off".format(email)
+                else:  # THere is other Value then expected, stop searching
+                    return "Invalid registration"
+            elif validemail == 1 and alreadyregistered == 1:  # means user with this email but already registered
+                return "you have already registered with your email"
+            elif validemail == 0:
+                return "Invalid registration"
+        except SignatureExpired:
+            # , if token expired, then you can stop the broadcasting
+            broadcastMessage = False
+            randomSaltBroadcast =None
+            return "token is expired with AtHome value: {}".format(AtHome)
+    else:  # no need to do anything because broacasting is off
+        return "there is no ongoing broadcasting messaging right now"
+
+#-----------------MAILING----------------^^^^^^
+
+
+def hasValidSessionId(sessionID):
+    if sessionID:
+        query = f"SELECT COUNT(*),lastactive FROM mod5.sessions WHERE sessionid=\'{sessionID}\' GROUP BY lastactive"
+        result = simpleSQLquery(query)
+        # if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and forward home page
+        if (result !=[]  and result[0][0] == 1 and not lastActiveTimeout(sessionID, result[0][1])):
+            return True
+        else: 
+            return False
     else:
         return False
 
+
+def resetSessionID(sessionID):
+    datetimeTimeOut = datetime.now() - timedelta(minutes=5)
+    # query= f"DELETE FROM mod5.sessions WHERE sessionid=\'{sessionID}\'"
+    query= f"DELETE FROM mod5.sessions WHERE lastactive <=\'{datetimeTimeOut}\'"
+    SQLqueryInsert(query)
+    resp = make_response(redirect(url_for('login')))
+    resp.set_cookie('sessionID', expires=0)
+    return resp
+
+#check for inactive, and if no timeout(5 minutes, 300 seconds) yet, change lastactive time to current:
+#this function will only be checked if the sessionID is in the table!! because of logical and
+def lastActiveTimeout(sessionID, lastactivedb):
+    #returns true if timeout or invalid sessionID therefore sessionID is invalid
+    #returns false if no timeout and extends your time with updating the lastactive time
+    
+    # lastActive = datetime.strptime(result[0][0], "%Y-%m-%d %H:%M:%S.%f")
+    diff = (datetime.now() - lastactivedb).total_seconds()
+    print(diff)
+    if diff > 300: #invalid
+        return True
+    else: #it is still valid, so change the lastactive to now
+        now = datetime.now()
+        query = f"UPDATE mod5.sessions SET lastactive = \'{now}\' WHERE sessionid=\'{sessionID}\'"
+        SQLqueryInsert(query)
+        print(f"Change the lastactive time to now,{now} , for sessionID: {sessionID}")
+        return False
+
+
+
+
 @app.route('/')
 def redirectToHome():
-    if hasValidSessionId():
-        return redirect('/home/0')
+    SQLqueryInsert("DELETE FROM mod5.sessions")
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            return redirect('/home/0')
+        else:
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
 # Redirect to home
 @app.route('/home')
 def redirect_to_home():
-    if hasValidSessionId():
-        return redirect('/home/0')
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            return redirect('/home/0')
+        else:
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
@@ -86,18 +258,14 @@ def home(id):
      #get the sessionID and check there even an sessionID
     sessionID = request.cookies.get('sessionID')
     if sessionID:
-        query =  "SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'"+sessionID+"\'"
-        result = simpleSQLquery(query)
+        
 
         # print(str(simpleSQLquery("SELECT * FROM mod5.sessions")))
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and return home page
-        if(result[0][0] == 1):
+        if hasValidSessionId(sessionID):
             return render_template('views/home.html', activeRoomId=id, rooms=fetchAllRooms(), selected=id, components=fetchAllComponents())
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-            
-            resp = make_response(redirect(url_for('login')))
-            resp.set_cookie('sessionID', expires=0)
-            return resp
+            return resetSessionID(sessionID)
     else: #the user doesnt have an sessionID, so go to login page
         return redirect(url_for('login'))
 
@@ -119,9 +287,13 @@ def fetchAllRooms():
 # Components CRUD
 @app.route('/components')
 def components():
-    if hasValidSessionId():
-        return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-2)
-    else:
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-2)
+        else:
+            return resetSessionID(sessionID)
+    else:    
         return redirect(url_for('login'))
 
 def fetchAllComponents():
@@ -140,39 +312,52 @@ def fetchAllComponents():
 
 @app.route('/components/add', methods=['GET', 'POST'])
 def addComponent():
-    if hasValidSessionId():
-        if request.method == 'POST': # If new component is added
-            name = request.form['name']
-            room = request.form['room']
-            query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
-            SQLqueryInsert(query)
-            return redirect('/components')
-        else: # If components page is visited
-            return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-1)
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            if request.method == 'POST': # If new component is added
+                name = request.form['name']
+                room = request.form['room']
+                query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
+                SQLqueryInsert(query)
+                return redirect('/components')
+            else: # If components page is visited
+                return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-1)
+        else:
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
 @app.route('/components/edit/<int:id>', methods=['GET', 'POST'])
 def editComponent(id):
-    if hasValidSessionId():
-        if request.method == 'POST':
-            name = request.form['name']
-            room = request.form['room']
-            query= f"UPDATE mod5.lights SET name = \'{name}\', roomid = \'{room}\' WHERE lightid={id};"
-            SQLqueryInsert(query)
-            return redirect('/components')
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+
+        if hasValidSessionId(sessionID):
+            if request.method == 'POST':
+                name = request.form['name']
+                room = request.form['room']
+                query= f"UPDATE mod5.lights SET name = \'{name}\', roomid = \'{room}\' WHERE lightid={id};"
+                SQLqueryInsert(query)
+                return redirect('/components')
+            else:
+                componentList = fetchAllComponents()
+                return render_template('views/components.html', components=componentList, rooms=fetchAllRooms(), showModal=id)
         else:
-            componentList = fetchAllComponents()
-            return render_template('views/components.html', components=componentList, rooms=fetchAllRooms(), showModal=id)
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
 @app.route('/components/delete/<int:id>')
 def deleteComponent(id):
-    if hasValidSessionId():
-        query = f"DELETE FROM mod5.lights WHERE lightid={id} RETURNING *;"
-        SQLqueryInsert(query)
-        return redirect('/components')
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            query = f"DELETE FROM mod5.lights WHERE lightid={id} RETURNING *;"
+            SQLqueryInsert(query)
+            return redirect('/components')
+        else:
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
@@ -194,50 +379,66 @@ def fetchAllUsers():
 
 @app.route('/users')
 def users():
-    if hasValidSessionId():
-        userList = fetchAllUsers()
-        return render_template('views/users.html', users=userList, showModal=-2)
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            userList = fetchAllUsers()
+            return render_template('views/users.html', users=userList, showModal=-2)
+        else:
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
 @app.route('/users/add', methods=['GET', 'POST'])
 def addUser():
-    if hasValidSessionId():
-        if request.method == 'POST': # If new component is added
-            email = request.form['email']
-            username = request.form['username']
-            password = request.form['password']
-            type = request.form['type']
-            query= f"INSERT INTO mod5.users (username, password, type, email) VALUES (\'{username}\', \'{password}\', \'{type}\', \'{email}\');"
-            SQLqueryInsert(query)
-            return redirect('/users')
-        else: # If components page is visited
-            return render_template('views/users.html', users=fetchAllUsers(), showModal=-1)
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            if request.method == 'POST': # If new component is added
+                email = request.form['email']
+                username = request.form['username']
+                password = request.form['password']
+                type = request.form['type']
+                query= f"INSERT INTO mod5.users (username, password, type, email) VALUES (\'{username}\', \'{password}\', \'{type}\', \'{email}\');"
+                SQLqueryInsert(query)
+                return redirect('/users')
+            else: # If components page is visited
+                return render_template('views/users.html', users=fetchAllUsers(), showModal=-1)
+        else:
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
 @app.route('/users/edit/<int:id>', methods=['GET', 'POST'])
 def editUser(id):
-    if hasValidSessionId():
-        if request.method == 'POST':
-            email = request.form['email']
-            username = request.form['username']
-            password = request.form['password']
-            type = request.form['type']
-            query= f"UPDATE mod5.users SET email = \'{email}\', username = \'{username}\', password = \'{password}\', type = \'{type}\' WHERE uid={id};"
-            SQLqueryInsert(query)
-            return redirect('/users')
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            if request.method == 'POST':
+                email = request.form['email']
+                username = request.form['username']
+                password = request.form['password']
+                type = request.form['type']
+                query= f"UPDATE mod5.users SET email = \'{email}\', username = \'{username}\', password = \'{password}\', type = \'{type}\' WHERE uid={id};"
+                SQLqueryInsert(query)
+                return redirect('/users')
+            else:
+                return render_template('views/users.html', users=fetchAllUsers(), showModal=id)
         else:
-            return render_template('views/users.html', users=fetchAllUsers(), showModal=id)
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
 @app.route('/users/delete/<int:id>')
 def deleteUser(id):
-    if hasValidSessionId():
-        query = f"DELETE FROM mod5.users WHERE uid={id} RETURNING *;"
-        SQLqueryInsert(query)
-        return redirect('/users')
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            query = f"DELETE FROM mod5.users WHERE uid={id} RETURNING *;"
+            SQLqueryInsert(query)
+            return redirect('/users')
+        else:
+            return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
@@ -316,7 +517,8 @@ def login(): # * Same account can currently be signed in with unlimited differen
                 result = simpleSQLquery(query)
                 #if the session does not yet exist, then the result should give an 0 count
                 if(result[0][0] == 0):
-                    query = f"INSERT INTO mod5.sessions (uid, sessionid) VALUES (\'{userID}\', \'{sessionToken}\')"
+                    now = datetime.now()
+                    query = f"INSERT INTO mod5.sessions (lastactive, uid, sessionid) VALUES (\'{now}\',\'{userID}\', \'{sessionToken}\')"
                     resultInsert = SQLqueryInsert(query)
                     if(resultInsert == "Succeeded!"): #means no Exceptions and everything went well
                         resp = make_response(redirect(url_for('home', id=0)))
@@ -342,17 +544,13 @@ def login(): # * Same account can currently be signed in with unlimited differen
 
         sessionID = request.cookies.get('sessionID')
         if sessionID:
-            query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionID}\'"
-            result = simpleSQLquery(query)
+           
             #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and forward home page
-            if(result[0][0] == 1):
+            if hasValidSessionId(sessionID):
                 return redirect('/home/0')
             else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-                resp = make_response(render_template('login.html'))
-                resp.set_cookie('sessionID', expires=0)
-                return resp
+                return resetSessionID(sessionID)
         else: #the user doesnt have an sessionID, so go to login page
-
             return render_template('views/login.html')
 
 @app.route('/logout')
@@ -362,16 +560,15 @@ def logout():
     resp.set_cookie('sessionID', expires=0)
     return resp
 
-# @app.route('/light', methods = ['POST'])
-def switchlight():
+@app.route('/light/<lightID>', methods = ['POST'])
+def switchlight(lightID):
     #check if user is logged in already for the GET login page
     print("Trying to switch light")
     sessionID = request.cookies.get('sessionID')
     if sessionID:
-        query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionID}\'"
-        result = simpleSQLquery(query)
+      
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
-        if(result[0][0] == 1):
+        if hasValidSessionId(sessionID):
             
             #switch light....
             print("now switch the light chosen: ")
@@ -381,108 +578,102 @@ def switchlight():
 
             switchTo = json_data["switchTo"]
 
-            # if switchTo == "True":
-            #     turn_on_lights()
-            # elif switchTo == "False":
-            #     turn_off_lights()
+            if switchTo == "True":
+                turn_on_lights()
+            elif switchTo == "False":
+                turn_off_lights()
 
             return  switchTo
 
-
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-            resp = make_response(redirect(url_for('login')))
-            resp.set_cookie('sessionID', expires=0)
-            return resp
+            return resetSessionID(sessionID)
+    else: #the user doesnt have an sessionID, therefore not privileges to chance lights
+        return redirect(url_for('login'))
     
-    #the user doesnt have an sessionID, therefore not privileges to chance lights
 
-# @app.route('/lightsensor', methods = ['POST'])
+@app.route('/lightsensor', methods = ['POST'])
 def switchAutomatic():
     #check if user is logged in already for the GET login page
     print("Trying to switch light")
     sessionID = request.cookies.get('sessionID')
     if sessionID:
-        query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionID}\'"
-        result = simpleSQLquery(query)
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
-        if(result[0][0] == 1):
+        if hasValidSessionId(sessionID):
             
             
             json_data = request.json
 
             switchTo = json_data["switchTo"]
 
-            # if switchTo == "True":
-            #     enableLoopSensor = True
-            #     automaticProcess = multiprocessing.Process(target=automatic_lights)
-            #     automaticProcess.start()
-            #     processList.append(automaticProcess)
-            #     return str(getStatusLight())
-            # elif switchTo == "False":
-            #     enableLoopSensor = False
-            #     for process in processList:
-            #         process.terminate()
-            #     return str(getStatusLight())
+            if switchTo == "True":
+                enableLoopSensor = True
+                automaticProcess = multiprocessing.Process(target=automatic_lights)
+                automaticProcess.start()
+                processList.append(automaticProcess)
+                return str(getStatusLight())
+            elif switchTo == "False":
+                enableLoopSensor = False
+                for process in processList:
+                    process.terminate()
+                return str(getStatusLight())
                 #stop the automatic-lights thread 
                 
 
-
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-            resp = make_response(redirect(url_for('login')))
-            resp.set_cookie('sessionID', expires=0)
-            return resp
+            return hasValidSessionId(sessionID)
     
-    #the user doesnt have an sessionID, therefore not privileges to chance lights
+    else: #the user doesnt have an sessionID, therefore not privileges to chance lights
+        return resetSessionID(sessionID)
 
-# def getStatusLight():
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(lights[0],GPIO.OUT)
-#     return GPIO.input(lights[0])
+def getStatusLight():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(lights[0],GPIO.OUT)
+    return GPIO.input(lights[0])
     
-# def turn_on_lights():
-#     for led in lights:
-#         GPIO.setmode(GPIO.BOARD)
-#         GPIO.setwarnings(False)
-#         GPIO.setup(led,GPIO.OUT)
-#         GPIO.output(led,GPIO.HIGH)
+def turn_on_lights():
+    for led in lights:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
+        GPIO.setup(led,GPIO.OUT)
+        GPIO.output(led,GPIO.HIGH)
        
         
-# def turn_off_lights():
-#     for led in lights:
-#         GPIO.setmode(GPIO.BOARD)
-#         GPIO.setwarnings(False)
-#         GPIO.setup(led,GPIO.OUT)
-#         GPIO.output(led,GPIO.LOW)
+def turn_off_lights():
+    for led in lights:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
+        GPIO.setup(led,GPIO.OUT)
+        GPIO.output(led,GPIO.LOW)
 
-# def turn_on_light(pin):
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(pin,GPIO.OUT)
-#     GPIO.output(pin,GPIO.HIGH)
+def turn_on_light(pin):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,GPIO.HIGH)
 
 
-# def turn_off_light(pin):
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(pin,GPIO.OUT)
-#     GPIO.output(pin,GPIO.LOW)
+def turn_off_light(pin):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,GPIO.LOW)
 
-# def automatic_lights():
-#     turn_off_lights()
-#     global enableLoopSensor
-#     while enableLoopSensor:
-#         print(lightsensor.get_light())
-#         if lightsensor.get_light() > darkness:
-#             turn_on_lights()
-#             print(GPIO.input(12))
-#             print("Lights are on")
-#         else:
-#             turn_off_lights()
-#             print("Lights are off")
-#             print(GPIO.input(12))
-#         time.sleep(1)
-#     print("end of automatic lights")
+def automatic_lights():
+    turn_off_lights()
+    global enableLoopSensor
+    while enableLoopSensor:
+        print(lightsensor.get_light())
+        if lightsensor.get_light() > darkness:
+            turn_on_lights()
+            print(GPIO.input(12))
+            print("Lights are on")
+        else:
+            turn_off_lights()
+            print("Lights are off")
+            print(GPIO.input(12))
+        time.sleep(1)
+    print("end of automatic lights")
 
 
 
@@ -605,7 +796,7 @@ def simpleSQLquery(query):
 print(local_ip)
 
 if __name__ == '__main__':
-    socketio.run(debug=True, host="0.0.0.0", port=8080)
+    socketio.run(app, debug=True, host="0.0.0.0", port=8080)
 
 # with requests.session() as s:
 #     # fetch the login page
