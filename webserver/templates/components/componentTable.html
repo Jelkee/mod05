@@ -122,7 +122,6 @@
   });
     const showModal = {{showModal|int}}
     const compType = "{{compType|string}}"
-    console.log(compType)
     let name = document.getElementById("name");
     let room = document.getElementById("room");
     let gpio = document.getElementById("gpio")
@@ -135,16 +134,15 @@
     if(showModal > -1){ // Edit existing component
       title.innerHTML = "Edit Component";
       console.log(compType)
-      let component = components.find(cmp => {return cmp.id == showModal && cmp.type == compType})
+      let component = components.find(cmp => {return cmp.id == showModal && cmp.type == compType}) // Find corresponding component
       name.value = component.name
       gpio.value = component.gpio
       room.value = component.room
       type.value = component.type
       if(component.type == 'sensor'){
-        console.log('nice')
         connectedDiv.style.display = ''
+        connected.value = component.connected
       }else{
-        console.log('niet nice')
         connectedDiv.style.display = 'none'
       }
       typeDiv.style.display = 'none'
