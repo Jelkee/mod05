@@ -99,11 +99,12 @@
           </div>
           <div class="mb-3" id="connected-div">
             <label class="form-label">Connected to</label>
-            <select
-              id="connected"
-              name="connected"
-              class="form-select"
-            ></select>
+            <select id="connected" name="connected" class="form-select">
+              {% for component in components %} {% if component.type == 'light'
+              %}
+              <option value="{{component.id}}">{{component.name}}</option>
+              {% endif %} {% endfor %}
+            </select>
           </div>
           <div class="modal-footer d-flex justify-content-center">
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -120,6 +121,8 @@
     keyboard: false
   });
     const showModal = {{showModal|int}}
+    const compType = "{{compType|string}}"
+    console.log(compType)
     let name = document.getElementById("name");
     let room = document.getElementById("room");
     let gpio = document.getElementById("gpio")

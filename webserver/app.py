@@ -429,7 +429,6 @@ def editComponent(id, type):
                 name = request.form['name']
                 room = request.form['room']
                 gpio = request.form['gpio']
-                type = request.form['type']
                 if type == 'sensor':
                     connected = request.form['connected']
                     query= f"UPDATE mod5.lightsensor SET name = \'{name}\', roomid = \'{room}\', gpio = \'{gpio}\', lightid = \'{connected}\' WHERE sensorid={id};"
@@ -438,7 +437,6 @@ def editComponent(id, type):
                 SQLqueryInsert(query)
                 return redirect('/components')
             else:
-                print('Type: ' + type)
                 return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=id, compType=type)
         else:
             return resetSessionID(sessionID)
