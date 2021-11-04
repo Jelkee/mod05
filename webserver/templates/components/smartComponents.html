@@ -1,10 +1,10 @@
-{% macro smartComponents(components, selectedRoom) -%}
+{% macro smartComponents(lights, selectedRoom) -%}
 
 <!-- Card -->
 <div class="row">
   <!-- prettier-ignore -->
-  {% for component in components %} 
-  {% if selectedRoom == 0 or component.room|int == selectedRoom|int %}
+  {% for light in lights %} 
+  {% if selectedRoom == 0 or light.room|int == selectedRoom|int %}
   <div class="col-sm-4 col-md-3 col-lg-2 col-xl-2 pb-4">
     <div class="card card-default" style="margin: 10px">
       <div
@@ -21,14 +21,14 @@
           <div class="col-md-2 float-right">
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox"
-              id="flexSwitchLights" name="lights" {{'checked' if
-              component.status == 'ON' }} onchange="Postmanual(this)" />
+              id="flexSwitchLights" name="lights" {{'checked' if light.status ==
+              'ON' }} onchange="Postmanual(this)" />
             </div>
           </div>
         </div>
       </div>
       <div class="card-body">
-        <h5 class="card-title">{{component.name}}</h5>
+        <h5 class="card-title">{{light.name}}</h5>
         <h6 class="card-subtitle mb-2 text-muted">Light</h6>
       </div>
       <div class="card-footer" style="background-color: white">

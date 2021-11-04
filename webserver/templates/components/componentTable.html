@@ -1,40 +1,38 @@
-{% macro componentTable(components, rooms, showModal) -%}
+{% macro componentTable(components, rooms, showModal, compType) -%}
 <table class="table">
   <thead>
+    <th>Type</th>
     <th>Id</th>
     <th>Name</th>
     <th>GPIO Pin</th>
     <th>Room</th>
     <th>
-      <a href="/components/add" type="button" class="btn btn-primary">
-        Add
-      </a>
+      <a href="/components/add" type="button" class="btn btn-primary"> Add </a>
     </th>
   </thead>
   <tbody>
     {% for component in components %}
     <tr>
+      <td>{{component.type}}</td>
       <td>{{component.id}}</td>
       <td>{{component.name}}</td>
+      <td>{{component.gpio}}</td>
       <td>
-        <select class="form-select">
-          {% for i in range(17) %}
-          <option {{ 'selected' if i == component.gpio|int }} value="{{i}}">{{i}}</option>
-          {% endfor %}
-        </select>
+        {% for room in rooms %} {% if room.id == component.room %} {{room.name}}
+        {% endif %} {% endfor %}
       </td>
       <td>
-          <select class="form-select">
-          {% for room in rooms %}
-          <option {{ 'selected' if room.id|int == component.room|int }} value="{{room.id}}">{{room.name}}</option>
-          {% endfor %}
-          <option value="{{-1}}">Edit Rooms...</option>
-        </select>
-    </td>
-      <td>
         <!-- <button class="btn btn-primary" onclick="toggleModal({{component.id}})">Edit</button> -->
-        <a href="components/edit/{{component.id}}" class="btn btn-primary">Edit</a>
-        <a href="components/delete/{{component.id}}" class="btn btn-primary">Delete</a>
+        <a
+          href="components/edit/{{component.type}}/{{component.id}}"
+          class="btn btn-primary"
+          >Edit</a
+        >
+        <a
+          href="components/delete/{{component.type}}/{{component.id}}"
+          class="btn btn-primary"
+          >Delete</a
+        >
       </td>
     </tr>
     {% endfor %}
@@ -47,11 +45,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 id="title" class="modal-title">Components</h5>
-        <a
-          href="/components"
-          type="button"
-          class="btn-close"
-        ></a>
+        <a href="/components" type="button" class="btn-close"></a>
       </div>
       <div class="modal-body">
         <form method="post">
@@ -69,9 +63,23 @@
           <div class="mb-3">
             <label class="form-label">GPIO</label>
             <select id="gpio" name="gpio" class="form-select">
-              {% for i in range(17) %}
-              <option value="{{i}}">{{i}}</option>
-              {% endfor %}
+              <option value="7">7</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="18">18</option>
+              <option value="22">22</option>
+              <option value="29">29</option>
+              <option value="31">31</option>
+              <option value="32">32</option>
+              <option value="33">33</option>
+              <option value="35">35</option>
+              <option value="36">36</option>
+              <option value="37">37</option>
+              <option value="38">38</option>
+              <option value="40">40</option>
             </select>
           </div>
           <div class="mb-3">
@@ -81,6 +89,21 @@
               <option value="{{room.id}}">{{room.name}}</option>
               {% endfor %}
             </select>
+          </div>
+          <div id="type-div" class="mb-3">
+            <label class="form-label">Type</label>
+            <select id="type" name="type" class="form-select">
+              <option value="light">Light</option>
+              <option value="sensor">Light Sensor</option>
+            </select>
+          </div>
+          <div class="mb-3" id="connected-div">
+            <label class="form-label">Connected to</label>
+            <select
+              id="connected"
+              name="connected"
+              class="form-select"
+            ></select>
           </div>
           <div class="modal-footer d-flex justify-content-center">
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -92,32 +115,57 @@
 </div>
 
 <script>
-  const modal = new bootstrap.Modal(document.getElementById("modal"), {
-  backdrop: 'static',
-  keyboard: false
-});
-  const showModal = {{showModal|int}}
-  let name = document.getElementById("name");
-  let room = document.getElementById("room");
-  let gpio = document.getElementById("gpio")
-  const components = {{components|tojson}}
+    const modal = new bootstrap.Modal(document.getElementById("modal"), {
+    backdrop: 'static',
+    keyboard: false
+  });
+    const showModal = {{showModal|int}}
+    let name = document.getElementById("name");
+    let room = document.getElementById("room");
+    let gpio = document.getElementById("gpio")
+    let type = document.getElementById("type")
+    let connected = document.getElementById("connected")
+    let connectedDiv = document.getElementById("connected-div")
+    let typeDiv = document.getElementById("type-div")
+    const components = {{components|tojson}}
 
-  if(showModal > -1){ // Edit existing component
-    title.innerHTML = "Edit Component";
-    let component = components.find(cmp => {return cmp.id == showModal})
-    name.value = component.name
-    gpio.value = component.gpio
-    room.value = component.room
-    modal.toggle()
-  }else if(showModal > -2){ // Add new component
-    title.innerHTML = "Add Component";
-    name.value = "";
-    gpio.value = "0";
-    room.value = "1";
-    modal.toggle()
-  }else{ // Don't show modal
+    if(showModal > -1){ // Edit existing component
+      title.innerHTML = "Edit Component";
+      console.log(compType)
+      let component = components.find(cmp => {return cmp.id == showModal && cmp.type == compType})
+      name.value = component.name
+      gpio.value = component.gpio
+      room.value = component.room
+      type.value = component.type
+      if(component.type == 'sensor'){
+        console.log('nice')
+        connectedDiv.style.display = ''
+      }else{
+        console.log('niet nice')
+        connectedDiv.style.display = 'none'
+      }
+      typeDiv.style.display = 'none'
+      modal.toggle()
+    }else if(showModal > -2){ // Add new component
+      title.innerHTML = "Add Component";
+      name.value = "";
+      gpio.value = "7";
+      room.value = "1";
+      type.value = "light"
+      connected.value = "0"
+      connectedDiv.style.display = "none";
+      typeDiv.style.display = ''
+      modal.toggle()
+    } // Else don't show modal
 
-  }
+    type.addEventListener("change", function() {
+    if(type.value == "sensor")
+    {
+      connectedDiv.style.display = "";
+    }else{
+      connectedDiv.style.display = "none";
+    }
+  });
 </script>
 
 {%- endmacro %}

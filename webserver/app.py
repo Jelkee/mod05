@@ -353,7 +353,7 @@ def deleteRoom(id):
     else:
         return redirect(url_for('login'))
 
-# Components CRUD
+# Lights CRUD
 @app.route('/components')
 def components():
     sessionID = request.cookies.get('sessionID')
@@ -367,16 +367,31 @@ def components():
 
 def fetchAllComponents():
     componentList = []
-    query = 'SELECT * FROM "mod5"."lights";'
-    result = simpleSQLquery(query)
+    queryLights = 'SELECT * FROM mod5.lights;'
+    querySensors = 'SELECT * FROM mod5.lightsensor;'
+    lights = simpleSQLquery(queryLights)
+    sensors = simpleSQLquery(querySensors)
 
     # Convert tuple to dict
-    for i in range(len(result)):
-        id = result[i][0]
-        name = result[i][1]
-        status = result[i][2]
-        room = result[i][3]
-        componentList.append({'id': id, 'name': name, 'gpio': '14', 'room': room})
+    for i in range(len(lights)):
+        id = lights[i][0]
+        name = lights[i][1]
+        status = lights[i][2]
+        room = lights[i][3]
+        gpio = lights[i][4]
+        type = 'light'
+        componentList.append({'id': id, 'name': name, 'status': status, 'room': room, 'gpio': gpio, 'type': type})
+    
+    for i in range(len(sensors)):
+        id = sensors[i][0]
+        name = sensors[i][1]
+        room = sensors[i][2]
+        gpio = sensors[i][3]
+        connected = sensors[i][4]
+        status = sensors[i][5]
+        type = 'sensor'
+        componentList.append({'id': id, 'name': name, 'room': room, 'gpio': gpio, 'connected': connected, 'status': status, 'type': type})
+
     componentList.sort(key=operator.itemgetter('id'))
     return componentList
 
@@ -388,7 +403,14 @@ def addComponent():
             if request.method == 'POST': # If new component is added
                 name = request.form['name']
                 room = request.form['room']
-                query= f"INSERT INTO mod5.lights (name, status, roomid) VALUES (\'{name}\', \'OFF\', \'{room}\');"
+                gpio = request.form['gpio']
+                type = request.form['type']
+                if type == 'sensor':
+                    connected = request.form['connected']
+                    query = f"INSERT INTO mod5.lightsensor(name, room, gpio, connected, status) VALUES (\'{name}\', \'{room}\', \'{gpio}\', \'{connected}\', \'OFF\')"
+                else:
+                    query= f"INSERT INTO mod5.lights (name, status, roomid, gpio) VALUES (\'{name}\', \'OFF\', \'{room}\', \'{gpio}\');"
+                    
                 SQLqueryInsert(query)
                 return redirect('/components')
             else: # If components page is visited
@@ -398,32 +420,40 @@ def addComponent():
     else:
         return redirect(url_for('login'))
 
-@app.route('/components/edit/<int:id>', methods=['GET', 'POST'])
-def editComponent(id):
+@app.route('/components/edit/<type>/<int:id>', methods=['GET', 'POST'])
+def editComponent(id, type):
     sessionID = request.cookies.get('sessionID')
     if sessionID:
-
         if hasValidSessionId(sessionID):
             if request.method == 'POST':
                 name = request.form['name']
                 room = request.form['room']
-                query= f"UPDATE mod5.lights SET name = \'{name}\', roomid = \'{room}\' WHERE lightid={id};"
+                gpio = request.form['gpio']
+                type = request.form['type']
+                if type == 'sensor':
+                    connected = request.form['connected']
+                    query= f"UPDATE mod5.lightsensor SET name = \'{name}\', roomid = \'{room}\', gpio = \'{gpio}\', lightid = \'{connected}\' WHERE sensorid={id};"
+                else:
+                    query= f"UPDATE mod5.lights SET name = \'{name}\', roomid = \'{room}\', gpio = \'{gpio}\' WHERE lightid={id};"
                 SQLqueryInsert(query)
                 return redirect('/components')
             else:
-                componentList = fetchAllComponents()
-                return render_template('views/components.html', components=componentList, rooms=fetchAllRooms(), showModal=id)
+                print('Type: ' + type)
+                return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=id, compType=type)
         else:
             return resetSessionID(sessionID)
     else:
         return redirect(url_for('login'))
 
-@app.route('/components/delete/<int:id>')
-def deleteComponent(id):
+@app.route('/components/delete/<type>/<int:id>')
+def deleteComponent(id, type):
     sessionID = request.cookies.get('sessionID')
     if sessionID:
         if hasValidSessionId(sessionID):
-            query = f"DELETE FROM mod5.lights WHERE lightid={id} RETURNING *;"
+            if type == 'sensor':
+                query = f"DELETE FROM mod5.lightsensor WHERE sensorid={id} RETURNING *;"
+            else:
+                query = f"DELETE FROM mod5.lights WHERE lightid={id} RETURNING *;"
             SQLqueryInsert(query)
             return redirect('/components')
         else:
