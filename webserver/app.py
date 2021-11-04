@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, redirect, url_for, session
+from flask import Flask, render_template, request, flash, make_response, redirect, url_for, session
 from flask_socketio import SocketIO, send
 from flask_mail import Mail, Message
 import datetime
@@ -11,8 +11,8 @@ import multiprocessing
 import operator
 
 # Commented out because I keep getting errors when installing
-import RPi.GPIO as GPIO
-import lightsensor
+# import RPi.GPIO as GPIO
+# import lightsensor
 import string
 import random
 
@@ -284,6 +284,75 @@ def fetchAllRooms():
     roomList.sort(key=operator.itemgetter('id'))
     return roomList
 
+@app.route('/rooms')
+def rooms():
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            return render_template('views/rooms.html', rooms=fetchAllRooms(), showModal=-2)
+        else:
+            return resetSessionID(sessionID)
+    else:    
+        return redirect(url_for('login'))
+
+@app.route('/rooms/add', methods=['GET', 'POST'])
+def addRoom():
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            if request.method == 'POST': # If new room is added
+                name = request.form['name']
+                query= f"INSERT INTO mod5.rooms (name) VALUES (\'{name}\');"
+                SQLqueryInsert(query)
+                return redirect('/rooms')
+            else: # If rooms page is visited
+                return render_template('views/rooms.html', rooms=fetchAllRooms(), showModal=-1)
+        else:
+            return resetSessionID(sessionID)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/rooms/edit/<int:id>', methods=['GET', 'POST'])
+def editRoom(id):
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+
+        if hasValidSessionId(sessionID):
+            if request.method == 'POST':
+                name = request.form['name']
+                query= f"UPDATE mod5.rooms SET name = \'{name}\'WHERE roomid={id};"
+                SQLqueryInsert(query)
+                return redirect('/rooms')
+            else:
+                return render_template('views/rooms.html', rooms=fetchAllRooms(), showModal=id)
+        else:
+            return resetSessionID(sessionID)
+    else:
+        return redirect(url_for('login'))
+
+def isRoomReferenced(id):
+    query = f"SELECT * FROM mod5.rooms WHERE roomid={id};"
+    result = simpleSQLquery(query)
+    print(result)
+    return (len(result) > 0) # Check if room still contains lights
+
+@app.route('/rooms/delete/<int:id>')
+def deleteRoom(id):
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        if hasValidSessionId(sessionID):
+            # if(isRoomReferenced(id)):
+            #     flash("Please remove all lights from the room before removing it", "info")
+            #     return render_template('views/rooms.html', rooms=fetchAllRooms(), showModal=-2)
+            # else:
+            query = f"DELETE FROM mod5.rooms WHERE roomid={id} RETURNING *;"
+            SQLqueryInsert(query)
+            return redirect('/rooms')
+        else:
+            return resetSessionID(sessionID)
+    else:
+        return redirect(url_for('login'))
+
 # Components CRUD
 @app.route('/components')
 def components():
@@ -305,6 +374,7 @@ def fetchAllComponents():
     for i in range(len(result)):
         id = result[i][0]
         name = result[i][1]
+        status = result[i][2]
         room = result[i][3]
         componentList.append({'id': id, 'name': name, 'gpio': '14', 'room': room})
     componentList.sort(key=operator.itemgetter('id'))
@@ -560,120 +630,120 @@ def logout():
     resp.set_cookie('sessionID', expires=0)
     return resp
 
-@app.route('/light/<lightID>', methods = ['POST'])
-def switchlight(lightID):
-    #check if user is logged in already for the GET login page
-    print("Trying to switch light")
-    sessionID = request.cookies.get('sessionID')
-    if sessionID:
+# @app.route('/light/<lightID>', methods = ['POST'])
+# def switchlight(lightID):
+#     #check if user is logged in already for the GET login page
+#     print("Trying to switch light")
+#     sessionID = request.cookies.get('sessionID')
+#     if sessionID:
       
-        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
-        if hasValidSessionId(sessionID):
+#         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
+#         if hasValidSessionId(sessionID):
             
-            #switch light....
-            print("now switch the light chosen: ")
+#             #switch light....
+#             print("now switch the light chosen: ")
             
             
-            json_data = request.json
+#             json_data = request.json
 
-            switchTo = json_data["switchTo"]
+#             switchTo = json_data["switchTo"]
 
-            if switchTo == "True":
-                turn_on_lights()
-            elif switchTo == "False":
-                turn_off_lights()
+#             if switchTo == "True":
+#                 turn_on_lights()
+#             elif switchTo == "False":
+#                 turn_off_lights()
 
-            return  switchTo
+#             return  switchTo
 
-        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-            return resetSessionID(sessionID)
-    else: #the user doesnt have an sessionID, therefore not privileges to chance lights
-        return redirect(url_for('login'))
+#         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+#             return resetSessionID(sessionID)
+#     else: #the user doesnt have an sessionID, therefore not privileges to chance lights
+#         return redirect(url_for('login'))
     
 
-@app.route('/lightsensor', methods = ['POST'])
-def switchAutomatic():
-    #check if user is logged in already for the GET login page
-    print("Trying to switch light")
-    sessionID = request.cookies.get('sessionID')
-    if sessionID:
-        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
-        if hasValidSessionId(sessionID):
+# @app.route('/lightsensor', methods = ['POST'])
+# def switchAutomatic():
+#     #check if user is logged in already for the GET login page
+#     print("Trying to switch light")
+#     sessionID = request.cookies.get('sessionID')
+#     if sessionID:
+#         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
+#         if hasValidSessionId(sessionID):
             
             
-            json_data = request.json
+#             json_data = request.json
 
-            switchTo = json_data["switchTo"]
+#             switchTo = json_data["switchTo"]
 
-            if switchTo == "True":
-                enableLoopSensor = True
-                automaticProcess = multiprocessing.Process(target=automatic_lights)
-                automaticProcess.start()
-                processList.append(automaticProcess)
-                return str(getStatusLight())
-            elif switchTo == "False":
-                enableLoopSensor = False
-                for process in processList:
-                    process.terminate()
-                return str(getStatusLight())
-                #stop the automatic-lights thread 
+#             if switchTo == "True":
+#                 enableLoopSensor = True
+#                 automaticProcess = multiprocessing.Process(target=automatic_lights)
+#                 automaticProcess.start()
+#                 processList.append(automaticProcess)
+#                 return str(getStatusLight())
+#             elif switchTo == "False":
+#                 enableLoopSensor = False
+#                 for process in processList:
+#                     process.terminate()
+#                 return str(getStatusLight())
+#                 #stop the automatic-lights thread 
                 
 
-        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-            return hasValidSessionId(sessionID)
+#         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+#             return hasValidSessionId(sessionID)
     
-    else: #the user doesnt have an sessionID, therefore not privileges to chance lights
-        return resetSessionID(sessionID)
+#     else: #the user doesnt have an sessionID, therefore not privileges to chance lights
+#         return resetSessionID(sessionID)
 
-def getStatusLight():
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setwarnings(False)
-    GPIO.setup(lights[0],GPIO.OUT)
-    return GPIO.input(lights[0])
+# def getStatusLight():
+#     GPIO.setmode(GPIO.BOARD)
+#     GPIO.setwarnings(False)
+#     GPIO.setup(lights[0],GPIO.OUT)
+#     return GPIO.input(lights[0])
     
-def turn_on_lights():
-    for led in lights:
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setwarnings(False)
-        GPIO.setup(led,GPIO.OUT)
-        GPIO.output(led,GPIO.HIGH)
+# def turn_on_lights():
+#     for led in lights:
+#         GPIO.setmode(GPIO.BOARD)
+#         GPIO.setwarnings(False)
+#         GPIO.setup(led,GPIO.OUT)
+#         GPIO.output(led,GPIO.HIGH)
        
         
-def turn_off_lights():
-    for led in lights:
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setwarnings(False)
-        GPIO.setup(led,GPIO.OUT)
-        GPIO.output(led,GPIO.LOW)
+# def turn_off_lights():
+#     for led in lights:
+#         GPIO.setmode(GPIO.BOARD)
+#         GPIO.setwarnings(False)
+#         GPIO.setup(led,GPIO.OUT)
+#         GPIO.output(led,GPIO.LOW)
 
-def turn_on_light(pin):
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setwarnings(False)
-    GPIO.setup(pin,GPIO.OUT)
-    GPIO.output(pin,GPIO.HIGH)
+# def turn_on_light(pin):
+#     GPIO.setmode(GPIO.BOARD)
+#     GPIO.setwarnings(False)
+#     GPIO.setup(pin,GPIO.OUT)
+#     GPIO.output(pin,GPIO.HIGH)
 
 
-def turn_off_light(pin):
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setwarnings(False)
-    GPIO.setup(pin,GPIO.OUT)
-    GPIO.output(pin,GPIO.LOW)
+# def turn_off_light(pin):
+#     GPIO.setmode(GPIO.BOARD)
+#     GPIO.setwarnings(False)
+#     GPIO.setup(pin,GPIO.OUT)
+#     GPIO.output(pin,GPIO.LOW)
 
-def automatic_lights():
-    turn_off_lights()
-    global enableLoopSensor
-    while enableLoopSensor:
-        print(lightsensor.get_light())
-        if lightsensor.get_light() > darkness:
-            turn_on_lights()
-            print(GPIO.input(12))
-            print("Lights are on")
-        else:
-            turn_off_lights()
-            print("Lights are off")
-            print(GPIO.input(12))
-        time.sleep(1)
-    print("end of automatic lights")
+# def automatic_lights():
+#     turn_off_lights()
+#     global enableLoopSensor
+#     while enableLoopSensor:
+#         print(lightsensor.get_light())
+#         if lightsensor.get_light() > darkness:
+#             turn_on_lights()
+#             print(GPIO.input(12))
+#             print("Lights are on")
+#         else:
+#             turn_off_lights()
+#             print("Lights are off")
+#             print(GPIO.input(12))
+#         time.sleep(1)
+#     print("end of automatic lights")
 
 
 

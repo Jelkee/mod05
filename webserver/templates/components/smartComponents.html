@@ -20,13 +20,9 @@
           </div>
           <div class="col-md-2 float-right">
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="flexSwitchLights"
-                name="lights"
-                onchange="Postmanual(this)"
-              />
+              <input class="form-check-input" type="checkbox"
+              id="flexSwitchLights" name="lights" {{'checked' if
+              component.status == 'ON' }} onchange="Postmanual(this)" />
             </div>
           </div>
         </div>

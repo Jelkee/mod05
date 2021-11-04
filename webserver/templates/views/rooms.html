@@ -1,0 +1,16 @@
+<!-- prettier-ignore -->
+{% from 'components/sidebar.html' import sidebar %} 
+{% from 'components/topbar.html' import topbar %}
+{% from 'components/roomTable.html' import roomTable %}
+
+{% extends 'base-loggedin.html' %}
+
+<!-- prettier-ignore -->
+{% block head %}
+<title>Raspberry Home - Rooms</title>
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block content %}
+{{roomTable(rooms, showModal)}}
+{% endblock %}
