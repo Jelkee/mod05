@@ -10,9 +10,8 @@ import time
 import multiprocessing
 import operator
 
-# Commented out because I keep getting errors when installing
-# import RPi.GPIO as GPIO
-# import lightsensor
+import RPi.GPIO as GPIO
+import lightsensor
 import string
 import random
 
@@ -658,161 +657,161 @@ def logout():
     resp.set_cookie('sessionID', expires=0)
     return resp
 
-# @app.route('/light', methods = ['POST'])
-# def switchlight():
-#     #check if user is logged in already for the GET login page
+@app.route('/light', methods = ['POST'])
+def switchlight():
+    #check if user is logged in already for the GET login page
     
-#     sessionID = request.cookies.get('sessionID')
-#     if sessionID:
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
       
-#         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
-#         if hasValidSessionId(sessionID):
+        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
+        if hasValidSessionId(sessionID):
             
-#             #switch light....
-#             print("now switch the light chosen: ")
+            #switch light....
+            print("now switch the light chosen: ")
             
             
-#             json_data = request.json
+            json_data = request.json
 
-#             switchTo = json_data["switchTo"]
-#             lightID = json_data["lightID"]
+            switchTo = json_data["switchTo"]
+            lightID = json_data["lightID"]
 
-#             print("Trying to switch the lightID: " + str(lightID))
+            print("Trying to switch the lightID: " + str(lightID))
 
-#             #get the GPIO PIN:
-#             query = f"SELECT gpio FROM mod5.lights WHERE lightid = \'{lightID}\'"
-#             result = simpleSQLquery(query)
-#             if result !=[]:
-#                 gpioPin = result[0][0]
-#                 alternate = ""
-#                 if switchTo == "True":
-#                     alternate = "Turn On"
-#                     turn_on_light(gpioPin)
-                    #   query = f"UPDATE mod5.lights SET status = \'ON\' WHERE lightid=\'{lightID}\'"
-                    #   SQLqueryInsert(query)
-#                 elif switchTo == "False":
-#                     alternate = "Turn Off"
-#                     turn_off_light(gpioPin)
-                    #   query = f"UPDATE mod5.lights SET status = \'OFF\' WHERE lightid=\'{lightID}\'"
-                    #   SQLqueryInsert(query) 
-#                 print(alternate +"the light for lightid: "+str(lightID) + ", GPIO pin: " + str(gpioPin) +
-#                 " and Now the status is: "+str(getStatusLight(gpioPin)))
+            #get the GPIO PIN:
+            query = f"SELECT gpio FROM mod5.lights WHERE lightid = \'{lightID}\'"
+            result = simpleSQLquery(query)
+            if result !=[]:
+                gpioPin = result[0][0]
+                alternate = ""
+                if switchTo == "True":
+                    alternate = "Turn On"
+                    turn_on_light(gpioPin)
+                      query = f"UPDATE mod5.lights SET status = \'ON\' WHERE lightid=\'{lightID}\'"
+                      SQLqueryInsert(query)
+                elif switchTo == "False":
+                    alternate = "Turn Off"
+                    turn_off_light(gpioPin)
+                      query = f"UPDATE mod5.lights SET status = \'OFF\' WHERE lightid=\'{lightID}\'"
+                      SQLqueryInsert(query) 
+                print(alternate +"the light for lightid: "+str(lightID) + ", GPIO pin: " + str(gpioPin) +
+                " and Now the status is: "+str(getStatusLight(gpioPin)))
                 
-#                 return  switchTo
-#             else:
-#                 return "couldn't find the gpio pin for this light"
+                return  switchTo
+            else:
+                return "couldn't find the gpio pin for this light"
             
 
-#         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-#             return resetSessionID(sessionID)
-#     else: #the user doesnt have an sessionID, therefore not privileges to chance lights
-#         return redirect(url_for('login'))
+        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+            return resetSessionID(sessionID)
+    else: #the user doesnt have an sessionID, therefore not privileges to chance lights
+        return redirect(url_for('login'))
 
-# @app.route('/lightsensor', methods = ['POST'])
-# def switchAutomatic():
-#     #check if user is logged in already for the GET login page
-#     print("Trying to switch light")
-#     sessionID = request.cookies.get('sessionID')
-#     if sessionID:
-#         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
-#         if hasValidSessionId(sessionID):
+@app.route('/lightsensor', methods = ['POST'])
+def switchAutomatic():
+    #check if user is logged in already for the GET login page
+    print("Trying to switch light")
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
+        if hasValidSessionId(sessionID):
             
-#             json_data = request.json
+            json_data = request.json
 
-#             switchTo = json_data["switchTo"]
-#             lightID = json_data["lightID"] #of the light that you want to automate
-#             #searching for a automatic sensor that this lightid
-#             query = f"SELECT l.gpio, s.gpio, s.sensorid FROM mod5.lights l, mod5.lightsensor s WHERE l.lightid=\'{lightID}\' AND l.lightid=s.lightid"
-#             result = simpleSQLquery(query)
-#             lightgpio = result[0][0]
-#             sensorgpio = result[0][1]
-            #   sensorId = result[0][2]
-#             print("lightGPIO: "+ str(lightgpio) + " and sensorGPIO: "+str(sensorgpio))
+            switchTo = json_data["switchTo"]
+            lightID = json_data["lightID"] #of the light that you want to automate
+            #searching for a automatic sensor that this lightid
+            query = f"SELECT l.gpio, s.gpio, s.sensorid FROM mod5.lights l, mod5.lightsensor s WHERE l.lightid=\'{lightID}\' AND l.lightid=s.lightid"
+            result = simpleSQLquery(query)
+            lightgpio = result[0][0]
+            sensorgpio = result[0][1]
+              sensorId = result[0][2]
+            print("lightGPIO: "+ str(lightgpio) + " and sensorGPIO: "+str(sensorgpio))
 
-#             if switchTo == "True":
-#                 #still need to know when the automatic is already on, dont create another process
-#                 #delete the old ones and add new process
-#                 for process in processList:
-#                     if(process[0] == lightgpio):
-#                         process[1].terminate()
-#                         processList.remove(process)
-#                         print("delete process of lightgpio: " + str(lightgpio))
+            if switchTo == "True":
+                #still need to know when the automatic is already on, dont create another process
+                #delete the old ones and add new process
+                for process in processList:
+                    if(process[0] == lightgpio):
+                        process[1].terminate()
+                        processList.remove(process)
+                        print("delete process of lightgpio: " + str(lightgpio))
 
-#                 automaticProcess = multiprocessing.Process(target=automatic_lights, args=(lightgpio, sensorgpio))
-#                 automaticProcess.start()
-#                 processList.append([lightgpio, automaticProcess])
-#                 print("after enable process: "+str(processList))
-                #   query = f"UPDATE mod5.lightsensor SET status = \'ON\' WHERE sensorid=\'{sensorId}\'"
-                #   SQLqueryInsert(query)
-#                 return str(getStatusLight(lightgpio))
-#             elif switchTo == "False":
-#                 for process in processList:
-#                     if(process[0] == lightgpio):
-#                         process[1].terminate()
-#                         process[1].join()
-#                         processList.remove(process)
-#                 print("After disable process: "+str(processList))
-                #   query = f"UPDATE mod5.lightsensor SET status = \'OFF\' WHERE sensorid=\'{sensorId}\'"
-                #   SQLqueryInsert(query)
-#                 return str(getStatusLight(lightgpio))
-#                 #stop the automatic-lights thread 
+                automaticProcess = multiprocessing.Process(target=automatic_lights, args=(lightgpio, sensorgpio))
+                automaticProcess.start()
+                processList.append([lightgpio, automaticProcess])
+                print("after enable process: "+str(processList))
+                  query = f"UPDATE mod5.lightsensor SET status = \'ON\' WHERE sensorid=\'{sensorId}\'"
+                  SQLqueryInsert(query)
+                return str(getStatusLight(lightgpio))
+            elif switchTo == "False":
+                for process in processList:
+                    if(process[0] == lightgpio):
+                        process[1].terminate()
+                        process[1].join()
+                        processList.remove(process)
+                print("After disable process: "+str(processList))
+                  query = f"UPDATE mod5.lightsensor SET status = \'OFF\' WHERE sensorid=\'{sensorId}\'"
+                  SQLqueryInsert(query)
+                return str(getStatusLight(lightgpio))
+                #stop the automatic-lights thread 
                 
 
-#         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-#             return hasValidSessionId(sessionID)
+        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+            return hasValidSessionId(sessionID)
     
-#     else: #the user doesnt have an sessionID, therefore not privileges to chance lights
-#         return resetSessionID(sessionID)
+    else: #the user doesnt have an sessionID, therefore not privileges to chance lights
+        return resetSessionID(sessionID)
 
-# def getStatusLight(pin):
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(pin,GPIO.OUT)
-#     return GPIO.input(pin)
+def getStatusLight(pin):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    return GPIO.input(pin)
     
-# def turn_on_lights():
-#     for led in lights:
-#         GPIO.setmode(GPIO.BOARD)
-#         GPIO.setwarnings(False)
-#         GPIO.setup(led,GPIO.OUT)
-#         GPIO.output(led,GPIO.HIGH)
+def turn_on_lights():
+    for led in lights:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
+        GPIO.setup(led,GPIO.OUT)
+        GPIO.output(led,GPIO.HIGH)
        
         
-# def turn_off_lights():
-#     for led in lights:
-#         GPIO.setmode(GPIO.BOARD)
-#         GPIO.setwarnings(False)
-#         GPIO.setup(led,GPIO.OUT)
-#         GPIO.output(led,GPIO.LOW)
+def turn_off_lights():
+    for led in lights:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
+        GPIO.setup(led,GPIO.OUT)
+        GPIO.output(led,GPIO.LOW)
 
-# def turn_on_light(pin):
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(pin,GPIO.OUT)
-#     GPIO.output(pin,GPIO.HIGH)
-
-
-# def turn_off_light(pin):
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(pin,GPIO.OUT)
-#     GPIO.output(pin,GPIO.LOW)
+def turn_on_light(pin):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,GPIO.HIGH)
 
 
+def turn_off_light(pin):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,GPIO.LOW)
 
-# def automatic_lights(lightPin, sensorPin):
-#     turn_off_light(lightPin)
-#     while True:
-#         timeget = lightsensor.get_light(sensorPin)
-#         print("Time to get light: "+str(timeget))
-#         if timeget > darkness:
-#             turn_on_light(lightPin)
-#             print("Lights are on")
-#         else:
-#             turn_off_light(lightPin)
-#             print("Lights are off")
-#         # print(GPIO.input(lightPin))
-#         time.sleep(1)
+
+
+def automatic_lights(lightPin, sensorPin):
+    turn_off_light(lightPin)
+    while True:
+        timeget = lightsensor.get_light(sensorPin)
+        print("Time to get light: "+str(timeget))
+        if timeget > darkness:
+            turn_on_light(lightPin)
+            print("Lights are on")
+        else:
+            turn_off_light(lightPin)
+            print("Lights are off")
+        # print(GPIO.input(lightPin))
+        time.sleep(1)
 
 
 
