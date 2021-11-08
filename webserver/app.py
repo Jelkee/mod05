@@ -20,8 +20,8 @@ import random
 from datetime import datetime, timedelta
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
-
-automaticProcess = "null"
+import hashlib
+# automaticProcess = "null"
 processList = [] 
 lights = [11,12] #Enter te pins which are connected to the leds here    # 7, 11, 12, 13, 15, 16, 18, 22, 29, 31, 32, 33, 35, 36, 37, 38, 40
 darkness = 100000 #The amount of time needed for the sensor to 'collect enough light' to turn on the lights. #The amount of time needed for the sensor to 'collect enough light' to turn on the lights.
@@ -32,6 +32,11 @@ darkness = 100000 #The amount of time needed for the sensor to 'collect enough l
 
 hostname = socket.gethostname()
 local_ip = socket.gethostbyname(hostname)
+
+dbhost = "bronto.ewi.utwente.nl"
+dbName = 'dab_di20212b_189'
+dbUser = "dab_di20212b_189"
+dbPass = "x9kEMAy6W07IEd1i"
 
 
 app = Flask(__name__)
@@ -156,7 +161,7 @@ def confirm_mail(token, AtHome):
                             process[1].join()
                         #TODO: now turn off all the LIGHTS!
 
-                        # turn_off_lights()
+                        turn_off_lights()
                         return ("you have succesfully registered with email: {} such that you are Not at Home!\n".format(email) +
                            "everyone has replied that they are not at home, therefore all lights will be turned off")
                                
@@ -184,13 +189,23 @@ def confirm_mail(token, AtHome):
 
 #-----------------MAILING----------------^^^^^^
 
+def sha512(key):
+    # value username or fixed value as salt
+    value = ''
+    hsobj = hashlib.sha512(key.encode("utf-8"))
+    hsobj.update(value.encode("utf-8"))
+    return hsobj.hexdigest()
+# if __name__ == '__main__':
+#     g = sha512('123456adopajdjkadkjlasdasdasdsadaddkjlakjl')
+#     print(g)
 
 def hasValidSessionId(sessionID):
     if sessionID:
-        query = f"SELECT COUNT(*),lastactive FROM mod5.sessions WHERE sessionid=\'{sessionID}\' GROUP BY lastactive"
+        query = f"SELECT sessions.lastactive,users.type FROM mod5.sessions, mod5.users  WHERE sessions.sessionid=\'{sessionID}\' AND sessions.uid=users.uid"
         result = simpleSQLquery(query)
         # if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and forward home page
-        if (result !=[]  and result[0][0] == 1 and not lastActiveTimeout(sessionID, result[0][1])):
+        if (result !=[] and not lastActiveTimeout(sessionID, result[0][0])):
+            print("type: "+result[0][1])   #TODO:defines the a user or admin for roles! 
             return True
         else: 
             return False
@@ -230,7 +245,7 @@ def lastActiveTimeout(sessionID, lastactivedb):
 
 @app.route('/')
 def redirectToHome():
-    SQLqueryInsert("DELETE FROM mod5.sessions")
+    # SQLqueryInsert("DELETE FROM mod5.sessions")
     sessionID = request.cookies.get('sessionID')
     if sessionID:
         if hasValidSessionId(sessionID):
@@ -495,11 +510,12 @@ def login(): # * Same account can currently be signed in with unlimited differen
 
         username = request.form['username']
         password = request.form['password']
-        session["username"] = username
+        # session["username"] = username
+        hashedpassword= sha512(password)
         #then check database, if credentitials correct, then create session token
-        print("username: %s     password: %s ", username, password )
+        print("username: %s     password: %s , hashedpassword: %s", username, password, hashedpassword )
         
-        query = f"SELECT uid FROM mod5.users WHERE username = \'{username}\' AND password = \'{password}\'"
+        query = f"SELECT uid FROM mod5.users WHERE username = \'{username}\' AND password = \'{hashedpassword}\'"
 
         results = simpleSQLquery(query)
 
@@ -509,7 +525,8 @@ def login(): # * Same account can currently be signed in with unlimited differen
             userID = results[0][0] 
             print("credentitials correct!\n")
             while(True):
-                sessionToken = randint(1,1000)
+                randomword = randomSalt(20)
+                sessionToken = sha512(randomword)
                 print(sessionToken)
 
                 #check if already exist
@@ -742,10 +759,7 @@ def viewcookie():
 """
  connect database to server by Flask-SQLAlchemy
 """
-dbhost = "bronto.ewi.utwente.nl"
-dbName = 'dab_di20212b_189'
-dbUser = "dab_di20212b_189"
-dbPass = "x9kEMAy6W07IEd1i"
+
 
 """pip install psycopg2
 connection between flask and database by Psycopg2
@@ -765,6 +779,7 @@ def dbSessions():
 #because INSERT, (UPDATE and DELETE) won't result any information, we dont fetch anything, but when there is an exception, we now something went wrong
 def SQLqueryInsert(query):
     result = "Succeeded!"
+    conn = None
     try:
         try:
             print('PostgreSQL in psycopg2 of the query:' + query)
@@ -796,15 +811,18 @@ def SQLqueryInsert(query):
 
 def simpleSQLquery(query):
     result = ""
-
+    conn = None
     try:
         print('PostgreSQL in psycopg2 of the query:' + query)
-        global conn
-        conn = psycopg2.connect(
-        host=dbhost,
-        database=dbUser,
-        user=dbUser,
-        password=dbPass)
+        
+        try:
+            conn = psycopg2.connect(
+            host=dbhost,
+            database=dbUser,
+            user=dbUser,
+            password=dbPass)
+        except Exception as e:
+            print(e)
     
 
         # create a cursor
