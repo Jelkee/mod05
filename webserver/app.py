@@ -286,7 +286,7 @@ def fetchAllRooms():
 @app.route('/rooms')
 def rooms():
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             return render_template('views/rooms.html', rooms=fetchAllRooms(), showModal=-2)
         else:
@@ -297,7 +297,7 @@ def rooms():
 @app.route('/rooms/add', methods=['GET', 'POST'])
 def addRoom():
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             if request.method == 'POST': # If new room is added
                 name = request.form['name']
@@ -314,7 +314,7 @@ def addRoom():
 @app.route('/rooms/edit/<int:id>', methods=['GET', 'POST'])
 def editRoom(id):
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
 
         if hasValidSessionId(sessionID):
             if request.method == 'POST':
@@ -338,7 +338,7 @@ def isRoomReferenced(id):
 @app.route('/rooms/delete/<int:id>')
 def deleteRoom(id):
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             # if(isRoomReferenced(id)):
             #     flash("Please remove all lights from the room before removing it", "info")
@@ -356,7 +356,7 @@ def deleteRoom(id):
 @app.route('/components')
 def components():
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-2)
         else:
@@ -397,7 +397,7 @@ def fetchAllComponents():
 @app.route('/components/add', methods=['GET', 'POST'])
 def addComponent():
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             if request.method == 'POST': # If new component is added
                 name = request.form['name']
@@ -422,7 +422,7 @@ def addComponent():
 @app.route('/components/edit/<type>/<int:id>', methods=['GET', 'POST'])
 def editComponent(id, type):
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             if request.method == 'POST':
                 name = request.form['name']
@@ -445,7 +445,7 @@ def editComponent(id, type):
 @app.route('/components/delete/<type>/<int:id>')
 def deleteComponent(id, type):
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             if type == 'sensor':
                 query = f"DELETE FROM mod5.lightsensor WHERE sensorid={id} RETURNING *;"
@@ -477,7 +477,7 @@ def fetchAllUsers():
 @app.route('/users')
 def users():
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             userList = fetchAllUsers()
             return render_template('views/users.html', users=userList, showModal=-2)
@@ -489,7 +489,7 @@ def users():
 @app.route('/users/add', methods=['GET', 'POST'])
 def addUser():
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             if request.method == 'POST': # If new component is added
                 email = request.form['email']
@@ -509,7 +509,7 @@ def addUser():
 @app.route('/users/edit/<int:id>', methods=['GET', 'POST'])
 def editUser(id):
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             if request.method == 'POST':
                 email = request.form['email']
@@ -529,7 +529,7 @@ def editUser(id):
 @app.route('/users/delete/<int:id>')
 def deleteUser(id):
     sessionID = request.cookies.get('sessionID')
-    if sessionID:
+    if sessionID and session['role'] == 'admin':
         if hasValidSessionId(sessionID):
             query = f"DELETE FROM mod5.users WHERE uid={id} RETURNING *;"
             SQLqueryInsert(query)
@@ -582,7 +582,7 @@ def test():
 
 @app.route('/chat-new')
 def chatNew():
-    return render_template('views/chat-3.html')
+    return render_template('views/chat.html')
 
 @app.route('/login', methods = ['POST', 'GET'])
 def login(): # * Same account can currently be signed in with unlimited different sessions
@@ -601,13 +601,14 @@ def login(): # * Same account can currently be signed in with unlimited differen
         #then check database, if credentitials correct, then create session token
         print("username: %s     password: %s ", username, password )
         
-        query = f"SELECT uid FROM mod5.users WHERE username = \'{username}\' AND password = \'{password}\'"
+        query = f"SELECT uid, type FROM mod5.users WHERE username = \'{username}\' AND password = \'{password}\'"
 
         results = simpleSQLquery(query)
 
         print(str(results))
         #create session token and check if already exist session token exist
         if (results):
+            session['role'] = results[0][1].rstrip()
             userID = results[0][0] 
             print("credentitials correct!\n")
             while(True):

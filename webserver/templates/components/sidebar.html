@@ -16,6 +16,7 @@
     </a>
   </li>
 
+  {% if session["role"] == 'admin' %}
   <!-- Nav Item - Components -->
   <li class="nav-item">
     <a href="/components" class="nav-link text">
@@ -39,6 +40,8 @@
       <span class="text-dark">Rooms</span>
     </a>
   </li>
+
+  {% endif %}
 
   <!-- Nav Item - Chat -->
   <!-- <li class="nav-item">
