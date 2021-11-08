@@ -23,8 +23,8 @@
 {% block content %}
 <div class="row clearfix">
   <div class="col-lg-12">
-    <div class="card chat-app">
-      <div id="plist" class="people-list">
+    <div class="card chat-app bg-light">
+      <!-- <div id="plist" class="people-list">
         <div class="input-group">
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="fa fa-search"></i></span>
@@ -32,33 +32,33 @@
           <input type="text" class="form-control" placeholder="Search..." />
         </div>
 
-        <!-- List of all users in the household that user can chat with -->
+        
         <ul class="list-unstyled chat-list mt-2 mb-0">
-          <!-- prettier-ignore -->
+          
           {% for user in users %} 
           {% if user.username != session["username"] %}
           <li
             class="clearfix {{'active' if user.id|int == request.path.split('/')[2]|int}}"
             onclick="location.href='http:/\/localhost:5000/chat/{{user.id}}'"
           >
-            <!-- <img
+            <img
               src="https://bootdey.com/img/Content/avatar/avatar2.png"
               alt="avatar"
-            /> -->
+            />
             <div class="about">
               <div class="name">{{user.username}}</div>
-              <!-- <div class="status">
-                    <i class="fa fa-circle online"></i> online
-                  </div> -->
+              <div class="status">
+                <i class="fa fa-circle online"></i> online
+              </div>
             </div>
           </li>
           {% endif %} {% endfor %}
         </ul>
-      </div>
+      </div> -->
 
       <!-- Chat -->
       <div class="chat">
-        <div class="chat-header clearfix">
+        <!-- <div class="chat-header clearfix">
           <div class="row">
             <div class="col-lg-6">
               <a
@@ -66,18 +66,18 @@
                 data-toggle="modal"
                 data-target="#view_info"
               >
-                <!-- <img
+                <img
                   src="https://bootdey.com/img/Content/avatar/avatar2.png"
                   alt="avatar"
-                /> -->
+                />
               </a>
               <div class="chat-about">
                 <h6 class="m-b-0">bob</h6>
-                <!-- <small>Last seen: 2 hours ago</small> -->
+                <small>Last seen: 2 hours ago</small>
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="chat-history">
           <ul class="m-b-0" id="messages">
             <!-- prettier-ignore -->

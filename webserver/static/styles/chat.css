@@ -1,18 +1,12 @@
 /* Source: https://www.bootdey.com/snippets/view/chat-app#preview */
 
-body {
-  background-color: #f4f7f6;
-  margin-top: 20px;
-}
 .card {
-  background: #fff;
   transition: 0.5s;
   border: 0;
   margin-bottom: 30px;
   border-radius: 0.55rem;
-  position: relative;
-  width: 100%;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
+  height: 100vh;
+  overflow-y: scroll;
 }
 .chat-app .people-list {
   width: 280px;
@@ -21,11 +15,6 @@ body {
   top: 0;
   padding: 20px;
   z-index: 7;
-}
-
-.chat-app .chat {
-  margin-left: 280px;
-  border-left: 1px solid #eaeaea;
 }
 
 .people-list {
@@ -91,8 +80,8 @@ body {
 }
 
 .chat .chat-history {
+  height: 100vh;
   padding: 20px;
-  border-bottom: 2px solid #fff;
 }
 
 .chat .chat-history ul {
