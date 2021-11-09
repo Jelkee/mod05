@@ -317,43 +317,6 @@ def calculate_environmental_score():
 
     session['environmentalScore'] = eScore
 
-# @app.route('/score')
-# def environmental_score():
-#     query = f"SELECT * FROM mod5.lightusage"
-#     result = simpleSQLquery(query)
-#     usageList = []
-#     totalSeconds = 0
-#     eScore = ''
-
-#     for i in range(len(result)):
-#         lightUsageId = result[i][0]
-#         lightId = result[i][1]
-#         startTime = result[i][2]
-#         endTime = result[i][3]
-#         if(endTime == None):
-#             endTime = datetime.now()
-#         usageList.append({'id': lightUsageId, 'light': lightId, 'start': startTime, 'end': endTime})
-    
-#     for usage in usageList:
-#         totalSeconds += (usage['end'] - usage['start']).total_seconds()
-    
-#     totalHours = totalSeconds / 3600
-
-#     if totalHours < 1:
-#         eScore = 'A'
-#     elif totalHours < 3:
-#         eScore = 'B'
-#     elif totalHours < 5:
-#         eScore = 'C'
-#     elif totalHours < 7:
-#         eScore = 'D'
-#     elif totalHours < 9:
-#         eScore = 'E'
-#     else:
-#         eScore = 'F'
-
-#     return render_template('/views/environmental-score.html', environmentalScore = eScore)
-
 # Rooms CRUD
 def fetchAllRooms():
     roomList = []
@@ -626,46 +589,6 @@ def deleteUser(id):
     else:
         return redirect(url_for('login'))
 
-# Chat CRUD
-messages = []
-onlineUsers = {}
-
-@app.route('/chat/<int:id>', methods=['GET', 'POST'])
-def chat(id):
-    userList = fetchAllUsers()
-    return render_template('views/chat.html', messages=messages, users=userList)    
-
-# todo: When recipient is offline, message should be stored in database. When recipient online, recipient should receive message in real time
-@socketio.on('message sent by user')
-def handle_message(msg):
-    messages.append(msg)
-
-    if(msg['to'] in onlineUsers):
-        recipientSessionId = onlineUsers[msg['to']]
-        socketio.emit('message sent to user', msg, room=recipientSessionId)
-    # return redirect(url_for('chat', id=msg['to']))
-    
-@socketio.on('user_connected')
-def handle_join():
-    # todo: Show online message
-    username = session["username"]
-    onlineUsers[username] = request.sid
-    
-@socketio.on('user_disconnected')
-def handleDisconnect(user):
-    del onlineUsers[user.username]
-    
-# End of chat
-
-@app.route('/test')
-def test():
-    return render_template('test.html')
-
-
-@app.route('/chat-new')
-def chatNew():
-    return render_template('views/chat.html')
-
 @app.route('/login', methods = ['POST', 'GET'])
 def login(): # * Same account can currently be signed in with unlimited different sessions
     results = ""
@@ -870,59 +793,44 @@ def getStatusLight(pin):
     return GPIO.input(pin)
     
 def turn_on_lights():
-    # for led in lights:
-    #     GPIO.setmode(GPIO.BOARD)
-    #     GPIO.setwarnings(False)
-    #     GPIO.setup(led,GPIO.OUT)
-    #     GPIO.output(led,GPIO.HIGH)
-    pass
-       
-        
+    for led in lights:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
+        GPIO.setup(led,GPIO.OUT)
+        GPIO.output(led,GPIO.HIGH)
+           
 def turn_off_lights():
-    # for led in lights:
-    #     GPIO.setmode(GPIO.BOARD)
-    #     GPIO.setwarnings(False)
-    #     GPIO.setup(led,GPIO.OUT)
-    #     GPIO.output(led,GPIO.LOW)
-    pass
-
+    for led in lights:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
+        GPIO.setup(led,GPIO.OUT)
+        GPIO.output(led,GPIO.LOW)
+    
 def turn_on_light(pin):
-    # GPIO.setmode(GPIO.BOARD)
-    # GPIO.setwarnings(False)
-    # GPIO.setup(pin,GPIO.OUT)
-    # GPIO.output(pin,GPIO.HIGH)
-    pass
-
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,GPIO.HIGH)
 
 def turn_off_light(pin):
-    # GPIO.setmode(GPIO.BOARD)
-    # GPIO.setwarnings(False)
-    # GPIO.setup(pin,GPIO.OUT)
-    # GPIO.output(pin,GPIO.LOW)
-    pass
-
-
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,GPIO.LOW)
 
 def automatic_lights(lightPin, sensorPin):
-    # turn_off_light(lightPin)
-    # while True:
-    #     timeget = lightsensor.get_light(sensorPin)
-    #     print("Time to get light: "+str(timeget))
-    #     if timeget > darkness:
-    #         turn_on_light(lightPin)
-    #         print("Lights are on")
-    #     else:
-    #         turn_off_light(lightPin)
-    #         print("Lights are off")
-    #     # print(GPIO.input(lightPin))
-    #     time.sleep(1)
-    pass
-
-
-
-
-
-
+    turn_off_light(lightPin)
+    while True:
+        timeget = lightsensor.get_light(sensorPin)
+        print("Time to get light: "+str(timeget))
+        if timeget > darkness:
+            turn_on_light(lightPin)
+            print("Lights are on")
+        else:
+            turn_off_light(lightPin)
+            print("Lights are off")
+        # print(GPIO.input(lightPin))
+        time.sleep(1)
 
 #for setting cookie
 @app.route('/setcookie', methods = ['POST', 'GET'])
