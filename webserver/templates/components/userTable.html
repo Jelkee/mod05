@@ -68,7 +68,7 @@
             />
           </div>
           <div class="mb-3">
-            <label class="form-label">Type</label>
+            <label class="form-label">Role</label>
             <select id="type" name="type" class="form-select">
               <option value="user">User</option>
               <option value="admin">Admin</option>
@@ -99,7 +99,6 @@
     if(showModal > -1){ // Edit existing user
       title.innerHTML = "Edit User";
       let user = users.find(usr => {return usr.id == showModal})
-      console.log(user)
       email.value = user.email
       username.value = user.username
       password.value = user.password

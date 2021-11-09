@@ -2,6 +2,11 @@
 <nav class="navbar navbar-expand topbar mb-4 static-top">
   <!-- Welcome text -->
   <span id="welcomeMessageSpan" class="navbar-brand mb-0 h1 text-dark"></span>
+  <br />
+  <span
+    id="environmentalScoreMessageSpan"
+    class="navbar-brand mb-0 h1 text-dark"
+  ></span>
   <!-- Topbar Navbar -->
   <!-- <ul class="navbar-nav ml-auto">
     <li class="nav-item dropdown no-arrow">
@@ -42,7 +47,11 @@
   }
 
   let welcomeMessageSpan = document.getElementById("welcomeMessageSpan");
-  let welcomeMessage = `Good ${timePeriod}, <b>{{session["username"]}}</b>`;
+  let environmentalScoreMessageSpan = document.getElementById(
+    "environmentalScoreMessageSpan"
+  );
+  let welcomeMessage = `Good ${timePeriod}, <b>{{session["username"]}}</b>. The environmental score of you household is <b>{{session["environmentalScore"]}}</b>!`;
   welcomeMessageSpan.innerHTML = welcomeMessage;
+  environmentalScoreMessageSpan.innerHTML = environmentalScoreMessage;
 </script>
 {%- endmacro %}

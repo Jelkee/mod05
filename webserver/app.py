@@ -25,10 +25,6 @@ processList = []
 lights = [11,12] #Enter te pins which are connected to the leds here    # 7, 11, 12, 13, 15, 16, 18, 22, 29, 31, 32, 33, 35, 36, 37, 38, 40
 darkness = 100000 #The amount of time needed for the sensor to 'collect enough light' to turn on the lights. #The amount of time needed for the sensor to 'collect enough light' to turn on the lights.
 
-
-
-
-
 hostname = socket.gethostname()
 local_ip = socket.gethostbyname(hostname)
 
@@ -36,7 +32,6 @@ dbhost = "bronto.ewi.utwente.nl"
 dbName = 'dab_di20212b_189'
 dbUser = "dab_di20212b_189"
 dbPass = "x9kEMAy6W07IEd1i"
-
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -96,7 +91,7 @@ def broadcastAll():
         #randomize salt:
     global randomSaltBroadcast
     randomSaltBroadcast = randomSalt(20)
-    print(randomSaltBroadcast)
+    # print(randomSaltBroadcast)
     global broadcastMessage
     broadcastMessage = True
     #Get all Users Emails to send them a broadcast
@@ -106,7 +101,7 @@ def broadcastAll():
     allemails = []
     for resultrow in result:
         allemails.append(resultrow[0])
-    print(str(allemails))
+    # print(str(allemails))
     returnmsg = ""
 
     for email in allemails:
@@ -133,25 +128,25 @@ def confirm_mail(token, AtHome):
     # and get the info for home or not
     
     global broadcastMessage
-    print("Broadcast is:"+str(broadcastMessage))
+    # print("Broadcast is:"+str(broadcastMessage))
     if broadcastMessage:
         try:
             # first check if the token is still valid with max_age.
-            print("check email")
+            # print("check email")
             global randomSaltBroadcast
             email = s.loads(token, salt=randomSaltBroadcast, max_age=120)  # in seconds
             # then check if valid email and if its not registered yet if user is home or not
             validemail = allemails.count(email)
             alreadyregistered = usersNotHome.count(email)
-            print("check validation for emails: {} + count: {} and usersNotHome: {} + count: {}".format(str(allemails), str(validemail) ,str(usersNotHome), str(alreadyregistered)))
+            # print("check validation for emails: {} + count: {} and usersNotHome: {} + count: {}".format(str(allemails), str(validemail) ,str(usersNotHome), str(alreadyregistered)))
             if validemail == 1 and alreadyregistered == 0:  # means a user with this email exists and not yet registered
-                print(AtHome)
+                # print(AtHome)
                 if AtHome == "False":  # means user is not home
                     usersNotHome.append(email)
-                    print("append mail in usersNotHome: {}".format(str(usersNotHome)))
+                    # print("append mail in usersNotHome: {}".format(str(usersNotHome)))
                     # when the everyone is not at home, then you can turn all the lights off:
                     if len(usersNotHome) == len(allemails):  # means everyone has replied
-                        print("Everyone has replied")
+                        # print("Everyone has replied")
                         broadcastMessage = False
                         # turn automatic sensor and lights off
                        
@@ -165,7 +160,7 @@ def confirm_mail(token, AtHome):
                            "everyone has replied that they are not at home, therefore all lights will be turned off")
                                
                     else: #not everyone has not yer replied to broadcast
-                        print(usersNotHome)
+                        # print(usersNotHome)
                         return "you have succesfully registered with email: {} such that you are Not at Home!".format(email)
 
                 elif AtHome == "True":  # someone is atHome, therefore don't turn any light off and disable broadcast
@@ -204,7 +199,7 @@ def hasValidSessionId(sessionID):
         result = simpleSQLquery(query)
         # if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and forward home page
         if (result !=[] and not lastActiveTimeout(sessionID, result[0][0])):
-            print("type: "+result[0][1])   #TODO:defines the a user or admin for roles! 
+            # print("type: "+result[0][1])   #TODO:defines the a user or admin for roles! 
             return True
         else: 
             return False
@@ -229,14 +224,14 @@ def lastActiveTimeout(sessionID, lastactivedb):
     
     # lastActive = datetime.strptime(result[0][0], "%Y-%m-%d %H:%M:%S.%f")
     diff = (datetime.now() - lastactivedb).total_seconds()
-    print(diff)
+    # print(diff)
     if diff > 300: #invalid
         return True
     else: #it is still valid, so change the lastactive to now
         now = datetime.now()
         query = f"UPDATE mod5.sessions SET lastactive = \'{now}\' WHERE sessionid=\'{sessionID}\'"
         SQLqueryInsert(query)
-        print(f"Change the lastactive time to now,{now} , for sessionID: {sessionID}")
+        # print(f"Change the lastactive time to now,{now} , for sessionID: {sessionID}")
         return False
 
 
@@ -272,11 +267,10 @@ def home(id):
      #get the sessionID and check there even an sessionID
     sessionID = request.cookies.get('sessionID')
     if sessionID:
-        
-
         # print(str(simpleSQLquery("SELECT * FROM mod5.sessions")))
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and return home page
         if hasValidSessionId(sessionID):
+            calculate_environmental_score()
             return render_template('views/home.html', activeRoomId=id, rooms=fetchAllRooms(), selected=id, components=fetchAllComponents())
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
             return resetSessionID(sessionID)
@@ -287,8 +281,7 @@ def home(id):
 def charts():
     return render_template('views/charts.html')
 
-@app.route('/score')
-def environmental_score():
+def calculate_environmental_score():
     query = f"SELECT * FROM mod5.lightusage"
     result = simpleSQLquery(query)
     usageList = []
@@ -300,6 +293,8 @@ def environmental_score():
         lightId = result[i][1]
         startTime = result[i][2]
         endTime = result[i][3]
+        if(endTime == None):
+            endTime = datetime.now()
         usageList.append({'id': lightUsageId, 'light': lightId, 'start': startTime, 'end': endTime})
     
     for usage in usageList:
@@ -307,20 +302,57 @@ def environmental_score():
     
     totalHours = totalSeconds / 3600
 
-    if totalHours < 1:
+    if totalHours < 15: # Less than half an hour a day (15/30 = 0.5)
         eScore = 'A'
-    elif totalHours < 3:
+    elif totalHours < 30:
         eScore = 'B'
-    elif totalHours < 5:
+    elif totalHours < 60:
         eScore = 'C'
-    elif totalHours < 7:
+    elif totalHours < 120:
         eScore = 'D'
-    elif totalHours < 9:
+    elif totalHours < 240:
         eScore = 'E'
-    else:
+    else: # Lights are on more than 8 hours a day (240/30 = 8)
         eScore = 'F'
 
-    return render_template('/views/environmental-score.html', environmentalScore = eScore)
+    session['environmentalScore'] = eScore
+
+# @app.route('/score')
+# def environmental_score():
+#     query = f"SELECT * FROM mod5.lightusage"
+#     result = simpleSQLquery(query)
+#     usageList = []
+#     totalSeconds = 0
+#     eScore = ''
+
+#     for i in range(len(result)):
+#         lightUsageId = result[i][0]
+#         lightId = result[i][1]
+#         startTime = result[i][2]
+#         endTime = result[i][3]
+#         if(endTime == None):
+#             endTime = datetime.now()
+#         usageList.append({'id': lightUsageId, 'light': lightId, 'start': startTime, 'end': endTime})
+    
+#     for usage in usageList:
+#         totalSeconds += (usage['end'] - usage['start']).total_seconds()
+    
+#     totalHours = totalSeconds / 3600
+
+#     if totalHours < 1:
+#         eScore = 'A'
+#     elif totalHours < 3:
+#         eScore = 'B'
+#     elif totalHours < 5:
+#         eScore = 'C'
+#     elif totalHours < 7:
+#         eScore = 'D'
+#     elif totalHours < 9:
+#         eScore = 'E'
+#     else:
+#         eScore = 'F'
+
+#     return render_template('/views/environmental-score.html', environmentalScore = eScore)
 
 # Rooms CRUD
 def fetchAllRooms():
@@ -386,7 +418,7 @@ def editRoom(id):
 def isRoomReferenced(id):
     query = f"SELECT * FROM mod5.rooms WHERE roomid={id};"
     result = simpleSQLquery(query)
-    print(result)
+    # print(result)
     return (len(result) > 0) # Check if room still contains lights
 
 @app.route('/rooms/delete/<int:id>')
@@ -521,11 +553,12 @@ def fetchAllUsers():
     # Convert tuple to dict
     for i in range(len(result)):
         id = result[i][0]
-        username = result[i][1]
-        type = result[i][3]
-        email = result[i][4]
+        username = result[i][1].rstrip()
+        type = result[i][3].rstrip()
+        email = result[i][4].rstrip()
         userList.append({'id': id, 'username': username, 'email': email, 'type': type})
     userList.sort(key=operator.itemgetter('id'))
+    print(userList)
     return userList
 
 @app.route('/users')
@@ -605,7 +638,6 @@ def chat(id):
 # todo: When recipient is offline, message should be stored in database. When recipient online, recipient should receive message in real time
 @socketio.on('message sent by user')
 def handle_message(msg):
-    print(msg)
     messages.append(msg)
 
     if(msg['to'] in onlineUsers):
@@ -616,17 +648,13 @@ def handle_message(msg):
 @socketio.on('user_connected')
 def handle_join():
     # todo: Show online message
-    print('user connected:')
     username = session["username"]
     onlineUsers[username] = request.sid
-    print(onlineUsers)
-
+    
 @socketio.on('user_disconnected')
 def handleDisconnect(user):
-    print('user disconnected')
     del onlineUsers[user.username]
-    print(onlineUsers)
-
+    
 # End of chat
 
 @app.route('/test')
@@ -654,22 +682,24 @@ def login(): # * Same account can currently be signed in with unlimited differen
         # session["username"] = username
         hashedpassword= sha512(password)
         #then check database, if credentitials correct, then create session token
-        print("username: %s     password: %s , hashedpassword: %s", username, password, hashedpassword )
+        # print("username: %s     password: %s , hashedpassword: %s", username, password, hashedpassword )
         
-        query = f"SELECT uid, type FROM mod5.users WHERE username = \'{username}\' AND password = \'{password}\'"
+        query = f"SELECT uid, type FROM mod5.users WHERE username = \'{username}\' AND password = \'{hashedpassword}\'"
 
         results = simpleSQLquery(query)
 
-        print(str(results))
+        # print(str(results))
         #create session token and check if already exist session token exist
         if (results):
             session['role'] = results[0][1].rstrip()
+            session['username'] = username
+            print(session['role'])
             userID = results[0][0] 
-            print("credentitials correct!\n")
+            # print("credentitials correct!\n")
             while(True):
                 randomword = randomSalt(20)
                 sessionToken = sha512(randomword)
-                print(sessionToken)
+                # print(sessionToken)
 
                 #check if already exist
                 query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionToken}\'"
@@ -720,188 +750,173 @@ def logout():
     return resp
 
 @app.route('/light', methods = ['POST'])
-def lightTmp(): # Temporary light function
-    json_data = request.json
-    switchTo = json_data["switchTo"]
-    lightID = json_data["lightID"]
-
-    query = f"SELECT gpio FROM mod5.lights WHERE lightid = \'{lightID}\'"
-    result = simpleSQLquery(query)
-    if result !=[]:
-        if switchTo == "True":
-            query = f"UPDATE mod5.lights SET status = \'ON\' WHERE lightid=\'{lightID}\'"
-            SQLqueryInsert(query)
-            now = datetime.now()
-            query= f"INSERT INTO mod5.lightusage (lightid, start) VALUES (\'{lightID}\', \'{now}\');"
-            SQLqueryInsert(query)
-        elif switchTo == "False":
-            query = f"UPDATE mod5.lights SET status = \'OFF\' WHERE lightid=\'{lightID}\'"
-            SQLqueryInsert(query)
-            query = f"SELECT * FROM mod5.lightusage WHERE lightid = \'{lightID}\' ORDER BY usageid DESC LIMIT 1"
-            result = simpleSQLquery(query)
-            lightUsageId = result[0][0]
-            now = datetime.now()
-            query = f"UPDATE mod5.lightusage SET \"end\" = \'{now}\' WHERE usageid=\'{lightUsageId}\'"
-            SQLqueryInsert(query)
+def switchlight():
+    #check if user is logged in already for the GET login page
     
-    return redirect(url_for('home', id=0))
-
-
-# @app.route('/light', methods = ['POST'])
-# def switchlight():
-#     #check if user is logged in already for the GET login page
-    
-#     sessionID = request.cookies.get('sessionID')
-#     if sessionID:
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
       
-#         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
-#         if hasValidSessionId(sessionID):
+        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
+        if hasValidSessionId(sessionID):
             
-#             #switch light....
-#             print("now switch the light chosen: ")
+            #switch light....
+            # print("now switch the light chosen: ")
             
             
-#             json_data = request.json
+            json_data = request.json
 
-#             switchTo = json_data["switchTo"]
-#             lightID = json_data["lightID"]
+            switchTo = json_data["switchTo"]
+            lightID = json_data["lightID"]
 
-#             print("Trying to switch the lightID: " + str(lightID))
+            # print("Trying to switch the lightID: " + str(lightID))
 
-#             #get the GPIO PIN:
-#             query = f"SELECT gpio FROM mod5.lights WHERE lightid = \'{lightID}\'"
-#             result = simpleSQLquery(query)
-#             if result !=[]:
-#                 gpioPin = result[0][0]
-#                 alternate = ""
-#                 if switchTo == "True":
-#                     alternate = "Turn On"
-#                     turn_on_light(gpioPin)
-#                       query = f"UPDATE mod5.lights SET status = \'ON\' WHERE lightid=\'{lightID}\'"
-#                       SQLqueryInsert(query)
-#                 elif switchTo == "False":
-#                     alternate = "Turn Off"
-#                     turn_off_light(gpioPin)
-#                       query = f"UPDATE mod5.lights SET status = \'OFF\' WHERE lightid=\'{lightID}\'"
-#                       SQLqueryInsert(query) 
-#                 print(alternate +"the light for lightid: "+str(lightID) + ", GPIO pin: " + str(gpioPin) +
-#                 " and Now the status is: "+str(getStatusLight(gpioPin)))
+            #get the GPIO PIN:
+            query = f"SELECT gpio FROM mod5.lights WHERE lightid = \'{lightID}\'"
+            result = simpleSQLquery(query)
+            if result !=[]:
+                gpioPin = result[0][0]
+                # alternate = ""
+                if switchTo == "True":
+                    alternate = "Turn On"
+                    turn_on_light(gpioPin)
+                    query = f"UPDATE mod5.lights SET status = \'ON\' WHERE lightid=\'{lightID}\'"
+                    SQLqueryInsert(query)
+                    now = datetime.now()
+                    query= f"INSERT INTO mod5.lightusage (lightid, start) VALUES (\'{lightID}\', \'{now}\');"
+                    SQLqueryInsert(query)
+                elif switchTo == "False":
+                    alternate = "Turn Off"
+                    turn_off_light(gpioPin)
+                    query = f"UPDATE mod5.lights SET status = \'OFF\' WHERE lightid=\'{lightID}\'"
+                    SQLqueryInsert(query)
+                    query = f"SELECT * FROM mod5.lightusage WHERE lightid = \'{lightID}\' ORDER BY usageid DESC LIMIT 1"
+                    result = simpleSQLquery(query)
+                    lightUsageId = result[0][0]
+                    now = datetime.now()
+                    query = f"UPDATE mod5.lightusage SET \"end\" = \'{now}\' WHERE usageid=\'{lightUsageId}\'"
+                    SQLqueryInsert(query)
+     
+                # print(alternate +"the light for lightid: "+str(lightID) + ", GPIO pin: " + str(gpioPin) +
+                # " and Now the status is: "+str(getStatusLight(gpioPin)))
                 
-#                 return  switchTo
-#             else:
-#                 return "couldn't find the gpio pin for this light"
+                return redirect(url_for('home', id=0))
+            else:
+                return "We couldn't find the GPIO pin for this light. Please try again."
+        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+            return resetSessionID(sessionID)
+    else: #the user doesnt have an sessionID, therefore not privileges to chance lights
+        return redirect(url_for('login'))
+
+@app.route('/lightsensor', methods = ['POST'])
+def switchAutomatic():
+    #check if user is logged in already for the GET login page
+    # print("Trying to switch light")
+    sessionID = request.cookies.get('sessionID')
+    if sessionID:
+        #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
+        if hasValidSessionId(sessionID):
             
+            json_data = request.json
 
-#         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-#             return resetSessionID(sessionID)
-#     else: #the user doesnt have an sessionID, therefore not privileges to chance lights
-#         return redirect(url_for('login'))
+            switchTo = json_data["switchTo"]
+            lightID = json_data["lightID"] #of the light that you want to automate
+            #searching for a automatic sensor that this lightid
+            query = f"SELECT l.gpio, s.gpio, s.sensorid FROM mod5.lights l, mod5.lightsensor s WHERE l.lightid=\'{lightID}\' AND l.lightid=s.lightid"
+            result = simpleSQLquery(query)
+            lightgpio = result[0][0]
+            sensorgpio = result[0][1]
+            sensorId = result[0][2]
+            # print("lightGPIO: "+ str(lightgpio) + " and sensorGPIO: "+str(sensorgpio))
 
-# @app.route('/lightsensor', methods = ['POST'])
-# def switchAutomatic():
-#     #check if user is logged in already for the GET login page
-#     print("Trying to switch light")
-#     sessionID = request.cookies.get('sessionID')
-#     if sessionID:
-#         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
-#         if hasValidSessionId(sessionID):
-            
-#             json_data = request.json
+            if switchTo == "True":
+                #still need to know when the automatic is already on, dont create another process
+                #delete the old ones and add new process
+                for process in processList:
+                    if(process[0] == lightgpio):
+                        process[1].terminate()
+                        processList.remove(process)
+                        # print("delete process of lightgpio: " + str(lightgpio))
 
-#             switchTo = json_data["switchTo"]
-#             lightID = json_data["lightID"] #of the light that you want to automate
-#             #searching for a automatic sensor that this lightid
-#             query = f"SELECT l.gpio, s.gpio, s.sensorid FROM mod5.lights l, mod5.lightsensor s WHERE l.lightid=\'{lightID}\' AND l.lightid=s.lightid"
-#             result = simpleSQLquery(query)
-#             lightgpio = result[0][0]
-#             sensorgpio = result[0][1]
-#               sensorId = result[0][2]
-#             print("lightGPIO: "+ str(lightgpio) + " and sensorGPIO: "+str(sensorgpio))
+                automaticProcess = multiprocessing.Process(target=automatic_lights, args=(lightgpio, sensorgpio))
+                automaticProcess.start()
+                processList.append([lightgpio, automaticProcess])
+                # print("after enable process: "+str(processList))
+                query = f"UPDATE mod5.lightsensor SET status = \'ON\' WHERE sensorid=\'{sensorId}\'"
+                SQLqueryInsert(query)
+                # return str(getStatusLight(lightgpio))
+            elif switchTo == "False":
+                for process in processList:
+                    if(process[0] == lightgpio):
+                        process[1].terminate()
+                        process[1].join()
+                        processList.remove(process)
+                # print("After disable process: "+str(processList))
+                query = f"UPDATE mod5.lightsensor SET status = \'OFF\' WHERE sensorid=\'{sensorId}\'"
+                SQLqueryInsert(query)
+                # return str(getStatusLight(lightgpio))
+                #stop the automatic-lights thread 
+            return redirect(url_for('home', id=0))
 
-#             if switchTo == "True":
-#                 #still need to know when the automatic is already on, dont create another process
-#                 #delete the old ones and add new process
-#                 for process in processList:
-#                     if(process[0] == lightgpio):
-#                         process[1].terminate()
-#                         processList.remove(process)
-#                         print("delete process of lightgpio: " + str(lightgpio))
-
-#                 automaticProcess = multiprocessing.Process(target=automatic_lights, args=(lightgpio, sensorgpio))
-#                 automaticProcess.start()
-#                 processList.append([lightgpio, automaticProcess])
-#                 print("after enable process: "+str(processList))
-#                   query = f"UPDATE mod5.lightsensor SET status = \'ON\' WHERE sensorid=\'{sensorId}\'"
-#                   SQLqueryInsert(query)
-#                 return str(getStatusLight(lightgpio))
-#             elif switchTo == "False":
-#                 for process in processList:
-#                     if(process[0] == lightgpio):
-#                         process[1].terminate()
-#                         process[1].join()
-#                         processList.remove(process)
-#                 print("After disable process: "+str(processList))
-#                   query = f"UPDATE mod5.lightsensor SET status = \'OFF\' WHERE sensorid=\'{sensorId}\'"
-#                   SQLqueryInsert(query)
-#                 return str(getStatusLight(lightgpio))
-#                 #stop the automatic-lights thread 
-                
-
-#         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
-#             return hasValidSessionId(sessionID)
+        else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
+            return hasValidSessionId(sessionID)
     
-#     else: #the user doesnt have an sessionID, therefore not privileges to chance lights
-#         return resetSessionID(sessionID)
+    else: #the user doesnt have an sessionID, therefore not privileges to chance lights
+        return resetSessionID(sessionID)
 
-# def getStatusLight(pin):
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(pin,GPIO.OUT)
-#     return GPIO.input(pin)
+def getStatusLight(pin):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(pin,GPIO.OUT)
+    return GPIO.input(pin)
     
-# def turn_on_lights():
-#     for led in lights:
-#         GPIO.setmode(GPIO.BOARD)
-#         GPIO.setwarnings(False)
-#         GPIO.setup(led,GPIO.OUT)
-#         GPIO.output(led,GPIO.HIGH)
+def turn_on_lights():
+    # for led in lights:
+    #     GPIO.setmode(GPIO.BOARD)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(led,GPIO.OUT)
+    #     GPIO.output(led,GPIO.HIGH)
+    pass
        
         
-# def turn_off_lights():
-#     for led in lights:
-#         GPIO.setmode(GPIO.BOARD)
-#         GPIO.setwarnings(False)
-#         GPIO.setup(led,GPIO.OUT)
-#         GPIO.output(led,GPIO.LOW)
+def turn_off_lights():
+    # for led in lights:
+    #     GPIO.setmode(GPIO.BOARD)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(led,GPIO.OUT)
+    #     GPIO.output(led,GPIO.LOW)
+    pass
 
-# def turn_on_light(pin):
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(pin,GPIO.OUT)
-#     GPIO.output(pin,GPIO.HIGH)
-
-
-# def turn_off_light(pin):
-#     GPIO.setmode(GPIO.BOARD)
-#     GPIO.setwarnings(False)
-#     GPIO.setup(pin,GPIO.OUT)
-#     GPIO.output(pin,GPIO.LOW)
+def turn_on_light(pin):
+    # GPIO.setmode(GPIO.BOARD)
+    # GPIO.setwarnings(False)
+    # GPIO.setup(pin,GPIO.OUT)
+    # GPIO.output(pin,GPIO.HIGH)
+    pass
 
 
+def turn_off_light(pin):
+    # GPIO.setmode(GPIO.BOARD)
+    # GPIO.setwarnings(False)
+    # GPIO.setup(pin,GPIO.OUT)
+    # GPIO.output(pin,GPIO.LOW)
+    pass
 
-# def automatic_lights(lightPin, sensorPin):
-#     turn_off_light(lightPin)
-#     while True:
-#         timeget = lightsensor.get_light(sensorPin)
-#         print("Time to get light: "+str(timeget))
-#         if timeget > darkness:
-#             turn_on_light(lightPin)
-#             print("Lights are on")
-#         else:
-#             turn_off_light(lightPin)
-#             print("Lights are off")
-#         # print(GPIO.input(lightPin))
-#         time.sleep(1)
+
+
+def automatic_lights(lightPin, sensorPin):
+    # turn_off_light(lightPin)
+    # while True:
+    #     timeget = lightsensor.get_light(sensorPin)
+    #     print("Time to get light: "+str(timeget))
+    #     if timeget > darkness:
+    #         turn_on_light(lightPin)
+    #         print("Lights are on")
+    #     else:
+    #         turn_off_light(lightPin)
+    #         print("Lights are off")
+    #     # print(GPIO.input(lightPin))
+    #     time.sleep(1)
+    pass
 
 
 
@@ -960,7 +975,7 @@ def SQLqueryInsert(query):
     conn = None
     try:
         try:
-            print('PostgreSQL in psycopg2 of the query:' + query)
+            # print('PostgreSQL in psycopg2 of the query:' + query)
             conn = psycopg2.connect(
             host=dbhost,
             database=dbUser,
@@ -991,7 +1006,7 @@ def simpleSQLquery(query):
     result = ""
     conn = None
     try:
-        print('PostgreSQL in psycopg2 of the query:' + query)
+        # print('PostgreSQL in psycopg2 of the query:' + query)
         
         try:
             conn = psycopg2.connect(
@@ -1012,7 +1027,7 @@ def simpleSQLquery(query):
         # cursor.execute("CREATE TABLE mod5.test (id serial PRIMARY KEY, num integer, data varchar);")
 
         result = cursor.fetchall()
-        print(str(result))
+        # print(str(result))
         # close the communication with the PostgreSQL
         cursor.close()
     except Exception as e:
@@ -1022,7 +1037,7 @@ def simpleSQLquery(query):
     return result
 
 
-print(local_ip)
+# print(local_ip)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host="0.0.0.0", port=8080)
