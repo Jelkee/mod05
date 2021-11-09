@@ -22,8 +22,9 @@
           <div class="col-md-2 float-right">
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox"
-              id="flexSwitchLights" name="lights" {{'checked' if
-              component.status == 'ON' }} onchange="Postmanual(this)" />
+              name="flexSwitchLights" id="{{component.id}}" name="lights"
+              {{'checked' if component.status == 'ON'}}
+              onchange="Postmanual(this)" />
             </div>
           </div>
         </div>
@@ -65,12 +66,14 @@
       xhr.send(
         JSON.stringify({
           switchTo: "True",
+          lightID: checkboxElem.id,
         })
       );
     } else {
       xhr.send(
         JSON.stringify({
           switchTo: "False",
+          lightID: checkboxElem.id,
         })
       );
     }
@@ -79,11 +82,11 @@
   function PostAutomatic(checkboxElem) {
     console.log("Light toggled automatically");
     if (document.getElementById("flexSwitchAutomatic").checked == true) {
-      document.getElementById("flexSwitchLights").disabled = true;
+      document.getElementByName("flexSwitchLights").disabled = true;
     } else if (
-      document.getElementById("flexSwitchAutomatic").checked == false
+      document.getElementByName("flexSwitchAutomatic").checked == false
     ) {
-      document.getElementById("flexSwitchLights").disabled = false;
+      document.getElementByName("flexSwitchLights").disabled = false;
     }
     var xhr = new XMLHttpRequest();
     yourUrl = "http://localhost:8080/lightsensor";
@@ -106,9 +109,9 @@
       xhr.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           if (xhr.response == "0") {
-            document.getElementById("flexSwitchLights").checked = false;
+            document.getElementByName("flexSwitchLights").checked = false;
           } else if (xhr.response == "1") {
-            document.getElementById("flexSwitchLights").checked = true;
+            document.getElementByName("flexSwitchLights").checked = true;
           }
         }
       };

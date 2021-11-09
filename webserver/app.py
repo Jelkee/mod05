@@ -268,6 +268,45 @@ def home(id):
     else: #the user doesnt have an sessionID, so go to login page
         return redirect(url_for('login'))
 
+@app.route('/charts')
+def charts():
+    return render_template('views/charts.html')
+
+@app.route('/score')
+def environmental_score():
+    query = f"SELECT * FROM mod5.lightusage"
+    result = simpleSQLquery(query)
+    usageList = []
+    totalSeconds = 0
+    eScore = ''
+
+    for i in range(len(result)):
+        lightUsageId = result[i][0]
+        lightId = result[i][1]
+        startTime = result[i][2]
+        endTime = result[i][3]
+        usageList.append({'id': lightUsageId, 'light': lightId, 'start': startTime, 'end': endTime})
+    
+    for usage in usageList:
+        totalSeconds += (usage['end'] - usage['start']).total_seconds()
+    
+    totalHours = totalSeconds / 3600
+
+    if totalHours < 1:
+        eScore = 'A'
+    elif totalHours < 3:
+        eScore = 'B'
+    elif totalHours < 5:
+        eScore = 'C'
+    elif totalHours < 7:
+        eScore = 'D'
+    elif totalHours < 9:
+        eScore = 'E'
+    else:
+        eScore = 'F'
+
+    return render_template('/views/environmental-score.html', environmentalScore = eScore)
+
 # Rooms CRUD
 def fetchAllRooms():
     roomList = []
@@ -375,7 +414,7 @@ def fetchAllComponents():
     for i in range(len(lights)):
         id = lights[i][0]
         name = lights[i][1]
-        status = lights[i][2]
+        status = lights[i][2].rstrip()
         room = lights[i][3]
         gpio = lights[i][4]
         type = 'light'
@@ -387,7 +426,7 @@ def fetchAllComponents():
         room = sensors[i][2]
         gpio = sensors[i][3]
         connected = sensors[i][4]
-        status = sensors[i][5]
+        status = sensors[i][5].rstrip()
         type = 'sensor'
         componentList.append({'id': id, 'name': name, 'room': room, 'gpio': gpio, 'connected': connected, 'status': status, 'type': type})
 
@@ -662,6 +701,34 @@ def logout():
     resp = make_response(render_template('views/login.html'))
     resp.set_cookie('sessionID', expires=0)
     return resp
+
+@app.route('/light', methods = ['POST'])
+def lightTmp(): # Temporary light function
+    json_data = request.json
+    switchTo = json_data["switchTo"]
+    lightID = json_data["lightID"]
+
+    query = f"SELECT gpio FROM mod5.lights WHERE lightid = \'{lightID}\'"
+    result = simpleSQLquery(query)
+    if result !=[]:
+        if switchTo == "True":
+            query = f"UPDATE mod5.lights SET status = \'ON\' WHERE lightid=\'{lightID}\'"
+            SQLqueryInsert(query)
+            now = datetime.now()
+            query= f"INSERT INTO mod5.lightusage (lightid, start) VALUES (\'{lightID}\', \'{now}\');"
+            SQLqueryInsert(query)
+        elif switchTo == "False":
+            query = f"UPDATE mod5.lights SET status = \'OFF\' WHERE lightid=\'{lightID}\'"
+            SQLqueryInsert(query)
+            query = f"SELECT * FROM mod5.lightusage WHERE lightid = \'{lightID}\' ORDER BY usageid DESC LIMIT 1"
+            result = simpleSQLquery(query)
+            lightUsageId = result[0][0]
+            now = datetime.now()
+            query = f"UPDATE mod5.lightusage SET \"end\" = \'{now}\' WHERE usageid=\'{lightUsageId}\'"
+            SQLqueryInsert(query)
+    
+    return redirect(url_for('home', id=0))
+
 
 # @app.route('/light', methods = ['POST'])
 # def switchlight():
