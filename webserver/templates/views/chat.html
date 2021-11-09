@@ -1,0 +1,167 @@
+<!-- prettier-ignore -->
+{% from 'components/sidebar.html' import sidebar %} 
+{% from 'components/topbar.html' import topbar %}
+{% extends 'base-loggedin.html' %}
+
+<!-- prettier-ignore -->
+{% block head %}
+<link
+  rel="stylesheet"
+  href='{{ url_for("static", filename="styles/chat.css") }}'
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+  integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
+<title>Raspberry Home - Chat</title>
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block content %}
+<div class="row clearfix">
+  <div class="col-lg-12">
+    <div class="card chat-app bg-light">
+      <!-- <div id="plist" class="people-list">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+          </div>
+          <input type="text" class="form-control" placeholder="Search..." />
+        </div>
+
+        
+        <ul class="list-unstyled chat-list mt-2 mb-0">
+          
+          {% for user in users %} 
+          {% if user.username != session["username"] %}
+          <li
+            class="clearfix {{'active' if user.id|int == request.path.split('/')[2]|int}}"
+            onclick="location.href='http:/\/localhost:5000/chat/{{user.id}}'"
+          >
+            <img
+              src="https://bootdey.com/img/Content/avatar/avatar2.png"
+              alt="avatar"
+            />
+            <div class="about">
+              <div class="name">{{user.username}}</div>
+              <div class="status">
+                <i class="fa fa-circle online"></i> online
+              </div>
+            </div>
+          </li>
+          {% endif %} {% endfor %}
+        </ul>
+      </div> -->
+
+      <!-- Chat -->
+      <div class="chat">
+        <!-- <div class="chat-header clearfix">
+          <div class="row">
+            <div class="col-lg-6">
+              <a
+                href="javascript:void(0);"
+                data-toggle="modal"
+                data-target="#view_info"
+              >
+                <img
+                  src="https://bootdey.com/img/Content/avatar/avatar2.png"
+                  alt="avatar"
+                />
+              </a>
+              <div class="chat-about">
+                <h6 class="m-b-0">bob</h6>
+                <small>Last seen: 2 hours ago</small>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <div class="chat-history">
+          <ul class="m-b-0" id="messages">
+            <!-- prettier-ignore -->
+            {% for message in messages %}
+            {% if message.from == session["username"] and message.to == users[request.path.split('/')[2]|int].username %}
+            <li class="clearfix">
+              <div class="message-data text-right">
+                <span class="message-data-time">10:10 AM, Today</span>
+              </div>
+              <div class="message other-message float-right">
+                {{message.content}}
+              </div>
+            </li>
+            {% elif message.from ==
+            users[request.path.split('/')[2]|int].username and message.to ==
+            session["username"] %}
+            <li class="clearfix">
+              <div class="message-data">
+                <span class="message-data-time">10:15 AM, Today</span>
+              </div>
+              <div class="message my-message">{{message.content}}</div>
+            </li>
+            {% endif %} {% endfor %}
+          </ul>
+        </div>
+        <div class="chat-message clearfix">
+          <div class="input-group mb-0">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="sendButton"
+                ><i class="fas fa-paper-plane"></i
+              ></span>
+            </div>
+            <input
+              type="text"
+              id="inputMessage"
+              class="form-control"
+              placeholder="Enter text here..."
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let socket = io();
+  socket.on("connect", function () {
+    socket.emit("user_connected");
+  });
+
+  window.addEventListener("beforeunload", function (event) {
+    socket.emit("user_disconnected", {
+      username: "session['username']",
+    });
+  });
+
+  $("#sendButton").on("click", function () {
+    let msg = $("#inputMessage").val();
+    socket.emit("message sent by user", {
+      from: "{{session['username']}}",
+      to: "{{users[request.path.split('/')[2]|int - 1].username}}", // Retrieve username of user to which message was sent
+      content: msg,
+    });
+    $("#messages").append(`
+        <li class="clearfix">
+          <div class="message-data text-right">
+            <span class="message-data-time">10:10 AM, Today</span>
+         </div>
+         <div class="message other-message float-right">${msg}</div>
+        </li>`);
+    msg = "";
+  });
+
+  socket.on("message sent to user", function ({ from, content }) {
+    if (from === "{{users[request.path.split('/')[2]|int].username}}") {
+      $("#messages").append(`
+        <li class="clearfix">
+          <div class="message-data">
+            <span class="message-data-time">10:15 AM, Today</span>
+          </div>
+          <div class="message my-message">${content}</div>
+        </li>`);
+    }
+  });
+</script>
+{% endblock %}

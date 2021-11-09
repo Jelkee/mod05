@@ -1,0 +1,112 @@
+{% macro addUser() -%}
+<!-- Click on Modal Button -->
+<button type="button" class="btn btn-primary" onclick="toggleModal(-1)">
+  Add
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="title" class="modal-title">Add User</h5>
+        <button
+          type="button"
+          class="btn-close"
+          onclick="toggleModal(-1);"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- <form>
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              name="username"
+              placeholder="Username"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              placeholder="Password"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Type</label>
+            <select id="type" class="form-select">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="modal-footer d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form> -->
+        <form action="POST">
+          <label class="form-label">Email</label>
+          <input
+            type="text"
+            class="form-control"
+            id="email"
+            name="email"
+            placeholder="Email"
+          />
+          <label class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            placeholder="Username"
+          />
+          <label class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Password"
+          />
+          <!-- <label class="form-label">Type</label>
+          <select id="type" class="form-select">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select> -->
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const addUserModal = new bootstrap.Modal(
+    document.getElementById("addUserModal")
+  );
+
+  function toggleModal(id) {
+    let title = document.getElementById("title");
+    let username = document.getElementById("username");
+    let password = document.getElementById("password");
+    let type = document.getElementById("type");
+
+    if (id > -1) {
+      //Edit existing user
+    } else {
+      // Add new user
+      title.value = "Add User";
+      username.value = "";
+      password.value = "";
+      type.value = "user";
+      addUserModal.toggle();
+    }
+  }
+</script>
+{%- endmacro %}

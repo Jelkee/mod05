@@ -1,0 +1,88 @@
+{% macro roomTable(rooms, showModal) -%}
+<table class="table">
+  <thead>
+    <th>Id</th>
+    <th>Name</th>
+    <th>
+      <a href="/rooms/add" type="button" class="btn btn-primary"> Add </a>
+    </th>
+  </thead>
+  <tbody>
+    {% for room in rooms %}
+    <tr>
+      <td>{{room.id}}</td>
+      <td>{{room.name}}</td>
+      <td>
+        <a href="rooms/edit/{{room.id}}" class="btn btn-primary">Edit</a>
+        <a href="rooms/delete/{{room.id}}" class="btn btn-primary">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<!-- prettier-ignore -->
+{% with messages = get_flashed_messages() %} 
+{% if messages %} 
+{% for message in messages %}
+<p style="color: red">{{message}}</p>
+<!-- prettier-ignore -->
+{% endfor %} 
+{%endif%} 
+{%endwith%}
+
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="title" class="modal-title">Rooms</h5>
+        <a href="/rooms" type="button" class="btn-close"></a>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              value=""
+              placeholder="Name"
+            />
+          </div>
+          <div class="modal-footer d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    const modal = new bootstrap.Modal(document.getElementById("modal"), {
+    backdrop: 'static',
+    keyboard: false
+  });
+    const showModal = {{showModal|int}}
+    let name = document.getElementById("name");
+    let room = document.getElementById("room");
+    let gpio = document.getElementById("gpio")
+    const rooms = {{rooms|tojson}}
+
+    if(showModal > -1){ // Edit existing room
+      title.innerHTML = "Edit Room";
+      let room = rooms.find(cmp => {return cmp.id == showModal})
+      name.value = room.name
+      modal.toggle()
+    }else if(showModal > -2){ // Add new room
+      title.innerHTML = "Add Room";
+      name.value = "";
+      modal.toggle()
+    }else{ // Don't show modal
+
+    }
+</script>
+
+{%- endmacro %}

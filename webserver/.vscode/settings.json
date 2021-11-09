@@ -1,0 +1,20 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "Test DB",
+      "database": "C:\\Users\\Niek1\\Documents\\Uni\\Project MOD9\\flask-test\\test.db"
+    },
+    {
+      "previewLimit": 50,
+      "server": "bronto.ewi.utwente.nl",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "MOD05 Project DB",
+      "database": "dab_di20212b_189",
+      "username": "dab_di20212b_189",
+      "password": "x9kEMAy6W07IEd1i"
+    }
+  ]
+}

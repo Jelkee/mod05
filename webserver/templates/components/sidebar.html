@@ -1,0 +1,71 @@
+{% macro sidebar(currentPage) -%}
+<ul class="navbar-nav sidebar accordion bg-white" id="accordionSidebar">
+  <!-- Sidebar - Brand -->
+  <span class="sidebar-brand d-flex align-items-center justify-content-center">
+    <div class="sidebar-brand-icon">
+      <i class="fas fa-home text-dark"></i>
+    </div>
+    <div class="sidebar-brand-text text-dark mx-1">Raspberry Home</div>
+  </span>
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item {{'active' if currentPage == 'home'}}">
+    <a href="/home/0" class="nav-link text">
+      <i class="fas fa-fw fa-tachometer-alt text-dark"></i>
+      <span class="text-dark">Dashboard</span>
+    </a>
+  </li>
+
+  {% if session["role"] == 'admin' %}
+  <!-- Nav Item - Components -->
+  <li class="nav-item">
+    <a href="/components" class="nav-link text">
+      <i class="fas fa-puzzle-piece text-dark"></i>
+      <span class="text-dark">Components</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Users -->
+  <li class="nav-item">
+    <a href="/users" class="nav-link text">
+      <i class="fas fa-users text-dark"></i>
+      <span class="text-dark">Users</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Rooms -->
+  <li class="nav-item">
+    <a href="/rooms" class="nav-link text">
+      <i class="fas fa-bed text-dark"></i>
+      <span class="text-dark">Rooms</span>
+    </a>
+  </li>
+
+  {% endif %}
+
+  <!-- Nav Item - Chat -->
+  <!-- <li class="nav-item">
+    <a href="/chat/0" class="nav-link text">
+      <i class="fas fa-comment-dots text-dark"></i>
+      <span class="text-dark">Chat</span>
+    </a>
+  </li> -->
+
+  <!-- Nav Item - Environmental Score -->
+  <li class="nav-item">
+    <a href="/score" class="nav-link text">
+      <i class="fas fa-chart-pie text-dark"></i>
+      <span class="text-dark">Statistics</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Logout -->
+  <li class="nav-item">
+    <a href="/logout" class="nav-link text">
+      <i class="fas fa-sign-out-alt text-dark"></i>
+      <span class="text-dark">Sign Out</span>
+    </a>
+  </li>
+</ul>
+
+{%- endmacro %}

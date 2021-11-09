@@ -1,0 +1,17 @@
+<!-- prettier-ignore -->
+{% extends 'base.html' %}
+
+{% block body %}
+<div id="wrapper">
+  {{ sidebar() }}
+  <div id="content-wrapper" class="d-flex flex-column bg-light">
+    <div id="content">
+      {{ topbar() }}
+      <!-- prettier-ignore -->
+      {% block content %}
+      <!-- Page content -->
+      {% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}
