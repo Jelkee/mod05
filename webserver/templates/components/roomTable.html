@@ -21,13 +21,13 @@
   </tbody>
 </table>
 <!-- prettier-ignore -->
-{% with messages = get_flashed_messages() %} 
-{% if messages %} 
+{% with messages = get_flashed_messages() %}
+{% if messages %}
 {% for message in messages %}
 <p style="color: red">{{message}}</p>
 <!-- prettier-ignore -->
-{% endfor %} 
-{%endif%} 
+{% endfor %}
+{%endif%}
 {%endwith%}
 
 <!-- Modal -->
@@ -49,7 +49,10 @@
               name="name"
               value=""
               placeholder="Name"
+              onkeyup="verifyName()"
+              pattern="[a-zA-Z0-9-_\s]{1,25}$"
             />
+               <span id = "namemsg" style="color:red"> </span>
           </div>
           <div class="modal-footer d-flex justify-content-center">
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -65,7 +68,7 @@
     backdrop: 'static',
     keyboard: false
   });
-    const showModal = {{showModal|int}}
+    const showModal = {{showModal|int}};
     let name = document.getElementById("name");
     let room = document.getElementById("room");
     let gpio = document.getElementById("gpio")
@@ -82,6 +85,15 @@
       modal.toggle()
     }else{ // Don't show modal
 
+    }
+        function verifyName(){
+        let name= document.getElementById("name").value;
+        let invalidInput = ["<",">","#","'","&","/","(",")","*","?","!","{","}","%","^",":",";",",","=","&","[","]"];
+        let nameInvalidInput = invalidInput.some(v => name.includes(v));
+        if(nameInvalidInput){
+            document.getElementById("namemsg").innerHTML = "Input only support A-Z, a-z, 0-9, -_ , space";
+            return false
+        }
     }
 </script>
 

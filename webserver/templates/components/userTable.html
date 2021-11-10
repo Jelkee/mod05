@@ -33,7 +33,7 @@
         <a href="/users" class="btn-close"></a>
       </div>
       <div class="modal-body">
-        <form method="post">
+          <form method="post" id="form">
           <div class="mb-3">
             <label class="form-label">Email</label>
             <input
@@ -43,7 +43,11 @@
               name="email"
               value=""
               placeholder="Email"
+              onkeyup="verifyEmail()" required
+             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+              title="email input restriction" required
             />
+              <span id = "emailmsg" style="color:red"> </span>
           </div>
           <div class="mb-3">
             <label class="form-label">Username</label>
@@ -54,28 +58,36 @@
               name="username"
               value=""
               placeholder="Username"
+              onkeyup="verifyUsername()"
+              pattern="[a-zA-Z0-9@!?%^-_|]{1,25}$"
+              title="username input restriction" required
             />
+              <span id = "usernamemsg" style="color:red"> </span>
           </div>
           <div class="mb-3">
             <label class="form-label">Password</label>
-            <input
+
+              <input
               type="password"
               class="form-control"
               id="password"
               name="password"
               value=""
               placeholder="Password"
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Password restriction" required
             />
+              <span id = "message" style="color:red"> </span><br>
           </div>
           <div class="mb-3">
-            <label class="form-label">Role</label>
+            <label class="form-label">Type</label>
             <select id="type" name="type" class="form-select">
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
           </div>
           <div class="modal-footer d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary" onclick="verifyInput()">Submit</button>
           </div>
         </form>
       </div>
@@ -88,8 +100,8 @@
   backdrop: 'static',
   keyboard: false});
 
-  const showModal = {{showModal|int}}
-  const users = {{users|tojson}}
+  const showModal = {{showModal|int}};
+  const users = {{users|tojson}};
 
   let email = document.getElementById("email");
   let username = document.getElementById("username");
@@ -99,6 +111,7 @@
     if(showModal > -1){ // Edit existing user
       title.innerHTML = "Edit User";
       let user = users.find(usr => {return usr.id == showModal})
+      console.log(user)
       email.value = user.email
       username.value = user.username
       password.value = user.password
@@ -112,6 +125,47 @@
       type.value = "user"
       modal.toggle()
   }
+
+
+function verifyInput(event) {
+    let username = document.getElementById("username").value;
+    let email = document.getElementById("email").value;
+    let pw = document.getElementById("password").value;
+    let lowerCaseLetters = /[a-z]/g;
+    let upperCaseLetters = /[A-Z]/g;
+    let numbers = /[0-9]/g;
+    let invalidInput = ["<",">","#","'","&","/","(",")"];
+    let pwInvalidInput = invalidInput.some(v => username.includes(v));
+    if(pw.length < 8 || !pw.match(lowerCaseLetters) ||!pw.match(upperCaseLetters)||!pw.match(numbers)) {
+        document.getElementById("message").innerHTML = "Password must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters";
+        alert(pw.match(lowerCaseLetters));
+        return false;
+    }
+    if(pwInvalidInput){
+        document.getElementById("message").innerHTML = "password contains invalid input"
+    }
+
+}
+    function verifyEmail(){
+        let email = document.getElementById("email").value;
+        let invalidInput = ["<",">","#","'","&","/","(",")","*","{","}",":",";",",","=","&","[","]"];
+        let emailInvalidInput = invalidInput.some(v => email.includes(v));
+        if(emailInvalidInput){
+        document.getElementById("emailmsg").innerHTML = "email is not valid, try again";
+        return false;
+    }
+    }
+    function verifyUsername(){
+        let username = document.getElementById("username").value;
+        let invalidInput = ["<",">","#","'","&","/","(",")","*","{","}",":",";",",","=","&","[","]"];
+        let usernameInvalidInput = invalidInput.some(v => username.includes(v));
+        if(usernameInvalidInput){
+        document.getElementById("usernamemsg").innerHTML = "username contains invalid input, try again";
+        return false;
+        }
+    }
+
+
 </script>
 
 {%- endmacro %}

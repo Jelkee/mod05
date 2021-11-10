@@ -58,7 +58,10 @@
               name="name"
               value=""
               placeholder="Name"
+              onkeyup="verifyName()"
+              pattern="[a-zA-Z0-9-_\s]{1,25}$"
             />
+            <span id = "namemsg" style="color:red"> </span>
           </div>
           <div class="mb-3">
             <label class="form-label">GPIO</label>
@@ -167,6 +170,15 @@
       connectedDiv.style.display = "none";
     }
   });
+    function verifyName(){
+        let name= document.getElementById("name").value;
+        let invalidInput = ["<",">","#","'","&","/","(",")","*","?","!","{","}","%","^",":",";",",","=","&","[","]"];
+        let nameInvalidInput = invalidInput.some(v => name.includes(v));
+        if(nameInvalidInput){
+            document.getElementById("namemsg").innerHTML = "Input only support A-Z, a-z, 0-9, -_ , space";
+            return false
+        }
+    }
 </script>
 
 {%- endmacro %}
