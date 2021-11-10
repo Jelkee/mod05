@@ -21,7 +21,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
 import hashlib
 # automaticProcess = "null"
-processList = [] 
+processList = []
 lights = [11,12] #Enter te pins which are connected to the leds here    # 7, 11, 12, 13, 15, 16, 18, 22, 29, 31, 32, 33, 35, 36, 37, 38, 40
 darkness = 100000 #The amount of time needed for the sensor to 'collect enough light' to turn on the lights. #The amount of time needed for the sensor to 'collect enough light' to turn on the lights.
 
@@ -85,7 +85,7 @@ def mailHello():
         return redirect(url_for('login'))
 
 
-      
+
 def broadcastAll():
     # encrypts a token form the email
         #randomize salt:
@@ -126,7 +126,7 @@ def randomSalt(size=6, chars=string.ascii_letters + string.digits):
 def confirm_mail(token, AtHome):
     # decrypts the token from email
     # and get the info for home or not
-    
+
     global broadcastMessage
     # print("Broadcast is:"+str(broadcastMessage))
     if broadcastMessage:
@@ -149,7 +149,7 @@ def confirm_mail(token, AtHome):
                         # print("Everyone has replied")
                         broadcastMessage = False
                         # turn automatic sensor and lights off
-                       
+
                         for process in processList:
                             process[1].terminate()
                             process[1].join()
@@ -158,7 +158,7 @@ def confirm_mail(token, AtHome):
                         turn_off_lights()
                         return ("you have succesfully registered with email: {} such that you are Not at Home!\n".format(email) +
                            "everyone has replied that they are not at home, therefore all lights will be turned off")
-                               
+
                     else: #not everyone has not yer replied to broadcast
                         # print(usersNotHome)
                         return "you have succesfully registered with email: {} such that you are Not at Home!".format(email)
@@ -199,9 +199,9 @@ def hasValidSessionId(sessionID):
         result = simpleSQLquery(query)
         # if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and forward home page
         if (result !=[] and not lastActiveTimeout(sessionID, result[0][0])):
-            # print("type: "+result[0][1])   #TODO:defines the a user or admin for roles! 
+            # print("type: "+result[0][1])   #TODO:defines the a user or admin for roles!
             return True
-        else: 
+        else:
             return False
     else:
         return False
@@ -221,7 +221,7 @@ def resetSessionID(sessionID):
 def lastActiveTimeout(sessionID, lastactivedb):
     #returns true if timeout or invalid sessionID therefore sessionID is invalid
     #returns false if no timeout and extends your time with updating the lastactive time
-    
+
     # lastActive = datetime.strptime(result[0][0], "%Y-%m-%d %H:%M:%S.%f")
     diff = (datetime.now() - lastactivedb).total_seconds()
     # print(diff)
@@ -239,6 +239,7 @@ def lastActiveTimeout(sessionID, lastactivedb):
 
 @app.route('/')
 def redirectToHome():
+    session['attempt'] = 5
     # SQLqueryInsert("DELETE FROM mod5.sessions")
     sessionID = request.cookies.get('sessionID')
     if sessionID:
@@ -296,10 +297,10 @@ def calculate_environmental_score():
         if(endTime == None):
             endTime = datetime.now()
         usageList.append({'id': lightUsageId, 'light': lightId, 'start': startTime, 'end': endTime})
-    
+
     for usage in usageList:
         totalSeconds += (usage['end'] - usage['start']).total_seconds()
-    
+
     totalHours = totalSeconds / 3600
 
     if totalHours < 15: # Less than half an hour a day (15/30 = 0.5)
@@ -340,7 +341,7 @@ def rooms():
             return render_template('views/rooms.html', rooms=fetchAllRooms(), showModal=-2)
         else:
             return resetSessionID(sessionID)
-    else:    
+    else:
         return redirect(url_for('login'))
 
 @app.route('/rooms/add', methods=['GET', 'POST'])
@@ -410,7 +411,7 @@ def components():
             return render_template('views/components.html', components=fetchAllComponents(), rooms=fetchAllRooms(), showModal=-2)
         else:
             return resetSessionID(sessionID)
-    else:    
+    else:
         return redirect(url_for('login'))
 
 def fetchAllComponents():
@@ -429,7 +430,7 @@ def fetchAllComponents():
         gpio = lights[i][4]
         type = 'light'
         componentList.append({'id': id, 'name': name, 'status': status, 'room': room, 'gpio': gpio, 'type': type})
-    
+
     for i in range(len(sensors)):
         id = sensors[i][0]
         name = sensors[i][1]
@@ -458,7 +459,7 @@ def addComponent():
                     query = f"INSERT INTO mod5.lightsensor(name, roomid, gpio, lightid, status) VALUES (\'{name}\', \'{room}\', \'{gpio}\', \'{connected}\', \'OFF\')"
                 else: # Type == 'light'
                     query= f"INSERT INTO mod5.lights (name, status, roomid, gpio) VALUES (\'{name}\', \'OFF\', \'{room}\', \'{gpio}\');"
-                    
+
                 SQLqueryInsert(query)
                 return redirect('/components')
             else: # If components page is visited
@@ -595,9 +596,9 @@ def login(): # * Same account can currently be signed in with unlimited differen
     sessionID = request.cookies.get('sessionID')
     if request.method == "POST" and not sessionID:
         #only when you do POST with no sessionID, then you can try to login with an giving sessionTOken
-    
+
         #first get the username and password of login page.
-    
+
 
 
         username = request.form['username']
@@ -606,7 +607,7 @@ def login(): # * Same account can currently be signed in with unlimited differen
         hashedpassword= sha512(password)
         #then check database, if credentitials correct, then create session token
         # print("username: %s     password: %s , hashedpassword: %s", username, password, hashedpassword )
-        
+
         query = f"SELECT uid, type FROM mod5.users WHERE username = \'{username}\' AND password = \'{hashedpassword}\'"
 
         results = simpleSQLquery(query)
@@ -617,7 +618,7 @@ def login(): # * Same account can currently be signed in with unlimited differen
             session['role'] = results[0][1].rstrip()
             session['username'] = username
             print(session['role'])
-            userID = results[0][0] 
+            userID = results[0][0]
             # print("credentitials correct!\n")
             while(True):
                 randomword = randomSalt(20)
@@ -641,9 +642,9 @@ def login(): # * Same account can currently be signed in with unlimited differen
                     else: # there is an exception return it
                         resp = make_response("Something went wrong with the database: " + str(resultInsert))
                         #someting went wrong so try later agian
-                        return resp 
-                        
-                #session does exist, so make another sessionToken, start the loop 
+                        return resp
+
+                #session does exist, so make another sessionToken, start the loop
 
 
         else:
@@ -651,12 +652,12 @@ def login(): # * Same account can currently be signed in with unlimited differen
         return resp
 
 
-    #the rest that will be POST with a sessionID, or GET methods with/without sessionID        
+    #the rest that will be POST with a sessionID, or GET methods with/without sessionID
     else: #check if user is logged in already for the GET login page
 
         sessionID = request.cookies.get('sessionID')
         if sessionID:
-           
+
             #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and forward home page
             if hasValidSessionId(sessionID):
                 return redirect('/home/0')
@@ -675,17 +676,17 @@ def logout():
 @app.route('/light', methods = ['POST'])
 def switchlight():
     #check if user is logged in already for the GET login page
-    
+
     sessionID = request.cookies.get('sessionID')
     if sessionID:
-      
+
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
         if hasValidSessionId(sessionID):
-            
+
             #switch light....
             # print("now switch the light chosen: ")
-            
-            
+
+
             json_data = request.json
 
             switchTo = json_data["switchTo"]
@@ -718,10 +719,10 @@ def switchlight():
                     now = datetime.now()
                     query = f"UPDATE mod5.lightusage SET \"end\" = \'{now}\' WHERE usageid=\'{lightUsageId}\'"
                     SQLqueryInsert(query)
-     
+
                 # print(alternate +"the light for lightid: "+str(lightID) + ", GPIO pin: " + str(gpioPin) +
                 # " and Now the status is: "+str(getStatusLight(gpioPin)))
-                
+
                 return redirect(url_for('home', id=0))
             else:
                 return "We couldn't find the GPIO pin for this light. Please try again."
@@ -738,7 +739,7 @@ def switchAutomatic():
     if sessionID:
         #if the sessionID is exist and it is valid(within timeout), then the result should give an 1 count and switch light:
         if hasValidSessionId(sessionID):
-            
+
             json_data = request.json
 
             switchTo = json_data["switchTo"]
@@ -777,12 +778,12 @@ def switchAutomatic():
                 query = f"UPDATE mod5.lightsensor SET status = \'OFF\' WHERE sensorid=\'{sensorId}\'"
                 SQLqueryInsert(query)
                 # return str(getStatusLight(lightgpio))
-                #stop the automatic-lights thread 
+                #stop the automatic-lights thread
             return redirect(url_for('home', id=0))
 
         else: # the sessionID is invalid therefore maybe delete invalid id in database? but especially for the user
             return hasValidSessionId(sessionID)
-    
+
     else: #the user doesnt have an sessionID, therefore not privileges to chance lights
         return resetSessionID(sessionID)
 
@@ -791,21 +792,21 @@ def getStatusLight(pin):
     GPIO.setwarnings(False)
     GPIO.setup(pin,GPIO.OUT)
     return GPIO.input(pin)
-    
+
 def turn_on_lights():
     for led in lights:
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
         GPIO.setup(led,GPIO.OUT)
         GPIO.output(led,GPIO.HIGH)
-           
+
 def turn_off_lights():
     for led in lights:
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
         GPIO.setup(led,GPIO.OUT)
         GPIO.output(led,GPIO.LOW)
-    
+
 def turn_on_light(pin):
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
@@ -899,7 +900,7 @@ def SQLqueryInsert(query):
 
          #commit to confirm the transaction for INSERT UPDATE and DELETE
         conn.commit()
-    
+
         # dont fetch result
 
         # close the communication with the PostgreSQL
@@ -915,7 +916,7 @@ def simpleSQLquery(query):
     conn = None
     try:
         # print('PostgreSQL in psycopg2 of the query:' + query)
-        
+
         try:
             conn = psycopg2.connect(
             host=dbhost,
@@ -924,7 +925,7 @@ def simpleSQLquery(query):
             password=dbPass)
         except Exception as e:
             print(e)
-    
+
 
         # create a cursor
         cursor = conn.cursor()
