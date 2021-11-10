@@ -599,56 +599,76 @@ def login(): # * Same account can currently be signed in with unlimited differen
 
         #first get the username and password of login page.
 
+        if session.get('attempt') > 0:
+            username = request.form['username']
+            password = request.form['password']
+            # session["username"] = username
+            hashedpassword= sha512(password)
+            #then check database, if credentitials correct, then create session token
+            # print("username: %s     password: %s , hashedpassword: %s", username, password, hashedpassword )
 
+            query = f"SELECT uid, type FROM mod5.users WHERE username = \'{username}\' AND password = \'{hashedpassword}\'"
 
-        username = request.form['username']
-        password = request.form['password']
-        # session["username"] = username
-        hashedpassword= sha512(password)
-        #then check database, if credentitials correct, then create session token
-        # print("username: %s     password: %s , hashedpassword: %s", username, password, hashedpassword )
+            results = simpleSQLquery(query)
 
-        query = f"SELECT uid, type FROM mod5.users WHERE username = \'{username}\' AND password = \'{hashedpassword}\'"
+            # print(str(results))
+            #create session token and check if already exist session token exist
+            if (results):
+                session['role'] = results[0][1].rstrip()
+                session['username'] = username
+                print(session['role'])
+                userID = results[0][0]
+                # print("credentitials correct!\n")
+                while(True):
+                    randomword = randomSalt(20)
+                    sessionToken = sha512(randomword)
+                    # print(sessionToken)
 
-        results = simpleSQLquery(query)
+                    #check if already exist
+                    query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionToken}\'"
+                    result = simpleSQLquery(query)
+                    #if the session does not yet exist, then the result should give an 0 count
+                    if(result[0][0] == 0):
+                        now = datetime.now()
+                        query = f"INSERT INTO mod5.sessions (lastactive, uid, sessionid) VALUES (\'{now}\',\'{userID}\', \'{sessionToken}\')"
+                        resultInsert = SQLqueryInsert(query)
+                        if(resultInsert == "Succeeded!"): #means no Exceptions and everything went well
+                            session['attempt'] = 5
+                            resp = make_response(redirect(url_for('home', id=0)))
+                            resp.set_cookie('sessionID', str(sessionToken))
+                            session["sessionId"] = sessionToken
+                            #you are done and you can visit the home with an valid session token!
+                            return resp
+                        else: # there is an exception return it
+                            session['attempt'] = 5
+                            resp = make_response("Something went wrong with the database: " + str(resultInsert))
+                            #someting went wrong so try later agian
+                            return resp
 
-        # print(str(results))
-        #create session token and check if already exist session token exist
-        if (results):
-            session['role'] = results[0][1].rstrip()
-            session['username'] = username
-            print(session['role'])
-            userID = results[0][0]
-            # print("credentitials correct!\n")
-            while(True):
-                randomword = randomSalt(20)
-                sessionToken = sha512(randomword)
-                # print(sessionToken)
+                    #session does exist, so make another sessionToken, start the loop
+            else:
+                attempt = session.get('attempt')
+                attempt -= 1
+                session['attempt'] = attempt
+                if attempt == 1:
+                    resp = make_response("Wrong credentials, you still have 1 attempt to login,"
+                                         " otherwise you will be blocked for 1min")
+                elif attempt == 0:
+                    resp = make_response("Blocked! you need to wait 1min")
+                else:
+                    resp = make_response("wrong credentitials, try again ")
 
-                #check if already exist
-                query =  f"SELECT COUNT(*) FROM mod5.sessions WHERE sessionid=\'{sessionToken}\'"
-                result = simpleSQLquery(query)
-                #if the session does not yet exist, then the result should give an 0 count
-                if(result[0][0] == 0):
-                    now = datetime.now()
-                    query = f"INSERT INTO mod5.sessions (lastactive, uid, sessionid) VALUES (\'{now}\',\'{userID}\', \'{sessionToken}\')"
-                    resultInsert = SQLqueryInsert(query)
-                    if(resultInsert == "Succeeded!"): #means no Exceptions and everything went well
-                        resp = make_response(redirect(url_for('home', id=0)))
-                        resp.set_cookie('sessionID', str(sessionToken))
-                        session["sessionId"] = sessionToken
-                        #you are done and you can visit the home with an valid session token!
-                        return resp
-                    else: # there is an exception return it
-                        resp = make_response("Something went wrong with the database: " + str(resultInsert))
-                        #someting went wrong so try later agian
-                        return resp
-
-                #session does exist, so make another sessionToken, start the loop
-
-
+            return resp
         else:
-            resp = make_response("wrong credentitials, try again ")
+            resp = make_response("Now you can try again!")
+            t = 60
+            while t:
+                #mins, secs = divmod(t, 60)
+                #timer = '{:02d}:{:02d}'.format(mins, secs)
+                #print(timer, end="\r")
+                time.sleep(1)
+                t -= 1
+                session['attempt'] = 5
         return resp
 
 
@@ -671,6 +691,7 @@ def logout():
     session.clear()
     resp = make_response(render_template('views/login.html'))
     resp.set_cookie('sessionID', expires=0)
+    session['attempt'] = 5
     return resp
 
 @app.route('/light', methods = ['POST'])
